@@ -9,12 +9,14 @@ public class ArenaManager : MonoBehaviour
 
     public GameObject[] Tetrominoes;
     public Vector3 spawnPosition;
+    public Material plaaformMaterial;
     
     public float spawnTime = 5f;
     public float fallTime = 0.5f;
 
     private Transform[,] grid = new Transform[width, height];
-    
+    private HashSet<Transform> fallingPieces = new HashSet<Transform>();
+
     private float previousTime = 0;
     
     private void Update()
@@ -49,6 +51,7 @@ public class ArenaManager : MonoBehaviour
             if (roundedY < 0 || grid[roundedX, roundedY] != null)
             {
                 AddToGrid(tetromino);
+                fallingPieces.Remove(tetromino);
                 return false;
             }
         }
@@ -59,6 +62,8 @@ public class ArenaManager : MonoBehaviour
 
     private void TranslateGrid(int direction)
     {
+        ShiftFallingConflictingTetrominoes(direction); 
+
         for (int row = 0; row < height; row++)
         {
             int col = direction > 0 ? 0 : width - 1;
@@ -81,11 +86,31 @@ public class ArenaManager : MonoBehaviour
         }
     }
 
+    private void ShiftFallingConflictingTetrominoes(int direction)
+    {
+        foreach (Transform tetromino in fallingPieces)
+        {
+            foreach (Transform block in tetromino)
+            {
+                int roundedX = (Mathf.RoundToInt(block.transform.position.x) - direction + width) % width;
+                int roundedY = Mathf.RoundToInt(block.transform.position.z);
+
+                if (grid[roundedX, roundedY] != null)
+                {
+                    tetromino.GetComponent<TetrisBlock>().ShiftTetromino(direction, width);
+                    break; 
+                }
+            }
+
+        }
+    }
+
     private void createNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
-        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], spawnPosition, Quaternion.identity, transform);
+        GameObject tetromino = Instantiate(Tetrominoes[4], spawnPosition, Quaternion.identity, transform);
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
+        fallingPieces.Add(tetromino.transform);
     }
 
     private void AddToGrid(Transform tetromino)
@@ -96,6 +121,7 @@ public class ArenaManager : MonoBehaviour
             int roundedY = Mathf.RoundToInt(block.transform.position.z);
 
             grid[roundedX, roundedY] = block;
+            block.GetComponent<MeshRenderer>().material = plaaformMaterial;
         }
     }
 
