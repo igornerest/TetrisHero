@@ -108,7 +108,7 @@ public class ArenaManager : MonoBehaviour
     private void createNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
-        GameObject tetromino = Instantiate(Tetrominoes[4], spawnPosition, Quaternion.identity, transform);
+        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], spawnPosition, Quaternion.identity, transform);
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
         fallingPieces.Add(tetromino.transform);
     }
@@ -160,8 +160,10 @@ public class ArenaManager : MonoBehaviour
     {
         for (int col = 0; col < width; col++)
         {
-            Transform blockTransform = grid[col, row].gameObject.transform;
-            Destroy(blockTransform.childCount <= 1 ? blockTransform.parent.gameObject : blockTransform.gameObject);
+            Transform transform = grid[col, row].gameObject.transform;
+            Transform parentTransform = transform.parent;
+
+            Destroy(parentTransform.childCount <= 1 ? parentTransform.gameObject : transform.gameObject);
 
             grid[col, row] = null;
         }

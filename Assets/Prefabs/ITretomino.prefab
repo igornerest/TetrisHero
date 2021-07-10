@@ -234,7 +234,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationPoint: {x: 0, y: 0, z: 0}
-  fallTime: 0.5
+  arenaManager: {fileID: 0}
 --- !u!1 &6014867956381472053
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,7 +341,7 @@ GameObject:
   - component: {fileID: 1038965919424822917}
   - component: {fileID: 7561575571974668273}
   m_Layer: 0
-  m_Name: Cub
+  m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
