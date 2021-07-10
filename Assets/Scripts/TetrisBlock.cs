@@ -22,9 +22,16 @@ public class TetrisBlock : MonoBehaviour
     {
         foreach (Transform block in transform)
         {
-            int xPosition = (Mathf.RoundToInt(block.transform.position.x) + direction) % maxWidth;
-            int yPosition = Mathf.RoundToInt(block.transform.position.z);
-            block.position = new Vector3(xPosition, 0, yPosition);
+            Vector3 blockLocalPosition = GetBlockLocalPosition(block);
+
+            int xPosition = (Mathf.RoundToInt(blockLocalPosition.x) + direction) % maxWidth;
+            int yPosition = Mathf.RoundToInt(blockLocalPosition.z);
+            block.position = transform.parent.position + new Vector3(xPosition, 0, yPosition);
         }
+    }
+
+    public Vector3 GetBlockLocalPosition(Transform block)
+    {
+        return transform.localPosition + block.localPosition;
     }
 }
