@@ -21,14 +21,6 @@ public class ArenaManager : MonoBehaviour
     
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            TranslateGrid(-1);
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow)) {
-            TranslateGrid(+1);
-        }
-
         if (Time.time - previousTime > spawnTime)
         {
             previousTime = Time.time;
@@ -45,8 +37,9 @@ public class ArenaManager : MonoBehaviour
     {
         foreach (Transform block in tetromino)
         {
-            int roundedX = Mathf.RoundToInt(block.transform.position.x);
-            int roundedY = Mathf.RoundToInt(block.transform.position.z) - 1;
+            Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
+            int roundedX = Mathf.RoundToInt(blockLocalPosition.x);
+            int roundedY = Mathf.RoundToInt(blockLocalPosition.z) - 1;
  
             if (roundedY < 0 || grid[roundedX, roundedY] != null)
             {
@@ -60,7 +53,7 @@ public class ArenaManager : MonoBehaviour
         return true;
     }
 
-    private void TranslateGrid(int direction)
+    public void TranslateGrid(int direction)
     {
         ShiftFallingConflictingTetrominoes(direction); 
 
@@ -78,7 +71,7 @@ public class ArenaManager : MonoBehaviour
 
                 if (grid[col, row] != null)
                 {
-                    grid[col, row].transform.position = new Vector3(col, 0, row);
+                    grid[col, row].transform.position = transform.position + new Vector3(col, 0, row);
                 }
 
                 col += direction;
@@ -92,8 +85,9 @@ public class ArenaManager : MonoBehaviour
         {
             foreach (Transform block in tetromino)
             {
-                int roundedX = (Mathf.RoundToInt(block.transform.position.x) - direction + width) % width;
-                int roundedY = Mathf.RoundToInt(block.transform.position.z);
+                Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
+                int roundedX = (Mathf.RoundToInt(blockLocalPosition.x) - direction + width) % width;
+                int roundedY = Mathf.RoundToInt(blockLocalPosition.z);
 
                 if (grid[roundedX, roundedY] != null)
                 {
@@ -108,7 +102,7 @@ public class ArenaManager : MonoBehaviour
     private void createNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
-        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], spawnPosition, Quaternion.identity, transform);
+        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
         fallingPieces.Add(tetromino.transform);
     }
@@ -117,8 +111,9 @@ public class ArenaManager : MonoBehaviour
     {
         foreach (Transform block in tetromino)
         {
-            int roundedX = Mathf.RoundToInt(block.transform.position.x);
-            int roundedY = Mathf.RoundToInt(block.transform.position.z);
+            Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
+            int roundedX = Mathf.RoundToInt(blockLocalPosition.x);
+            int roundedY = Mathf.RoundToInt(blockLocalPosition.z);
 
             grid[roundedX, roundedY] = block;
             block.GetComponent<MeshRenderer>().material = plaaformMaterial;
@@ -176,7 +171,7 @@ public class ArenaManager : MonoBehaviour
             if (grid[col, row] != null)
             {
                 grid[col, row - offset] = grid[col, row];
-                grid[col, row - offset].transform.position += Vector3.back * offset;
+                grid[col, row - offset].transform.localPosition += Vector3.back * offset;
                 grid[col, row] = null;
             }
         }
