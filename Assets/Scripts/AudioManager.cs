@@ -55,7 +55,6 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("BBB");
             sound.AddCycle();
         }
        

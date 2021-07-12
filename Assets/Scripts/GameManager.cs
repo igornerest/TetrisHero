@@ -61,10 +61,12 @@ public class GameManager : MonoBehaviour
         this.firstPlayer.playerArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.enemyArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.playerId = 1;
+        this.firstPlayer.playerArenaManager.turn = true;
 
         this.secondPlayer = new GameObject("SecondPlayer").AddComponent<PlayerController>();
         this.secondPlayer.playerArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.enemyArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.playerId = 2;
+        this.secondPlayer.playerArenaManager.turn = false;
     }
 }

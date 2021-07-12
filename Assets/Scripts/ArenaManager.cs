@@ -19,6 +19,7 @@ public class ArenaManager : MonoBehaviour
     public Material plaaformMaterial;
     
     public float fallTime = 0.5f;
+    public bool turn;
 
     private Transform[,] grid = new Transform[width, height];
     private HashSet<Transform> fallingPieces = new HashSet<Transform>();
@@ -39,7 +40,6 @@ public class ArenaManager : MonoBehaviour
             case AudioStateMachine.SpawnTretomino:
                 if (deltaTime > AudioManager.Instance.GetSound("Init").momentHighPointCycle)
                 {
-                    Debug.Log("AAAA");
                     createNewTetromino();
                     audioStateMachine = AudioStateMachine.EndingCycle;
                 }
@@ -49,6 +49,7 @@ public class ArenaManager : MonoBehaviour
                 {
                     previousTime = Time.time;
                     audioStateMachine = AudioStateMachine.StartMusic;
+                    turn = !turn;
                 }
                 break;
         }
@@ -127,10 +128,13 @@ public class ArenaManager : MonoBehaviour
 
     private void createNewTetromino()
     {
-        int randomIndex = Random.Range(0, Tetrominoes.Length);
-        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
-        tetromino.GetComponent<TetrisBlock>().arenaManager = this;
-        fallingPieces.Add(tetromino.transform);
+        if (turn == true)
+        {
+            int randomIndex = Random.Range(0, Tetrominoes.Length);
+            GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
+            tetromino.GetComponent<TetrisBlock>().arenaManager = this;
+            fallingPieces.Add(tetromino.transform);
+        }
     }
 
     private void AddToGrid(Transform tetromino)
