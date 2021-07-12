@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+enum AudioStateMachine
+{
+    StartMusic,
+    SpawnTretomino,
+    EndingCycle
+}
+
 public class ArenaManager : MonoBehaviour
 {
     public static int height = 15;
@@ -11,20 +18,39 @@ public class ArenaManager : MonoBehaviour
     public Vector3 spawnPosition;
     public Material plaaformMaterial;
     
-    public float spawnTime = 5f;
     public float fallTime = 0.5f;
 
     private Transform[,] grid = new Transform[width, height];
     private HashSet<Transform> fallingPieces = new HashSet<Transform>();
 
     private float previousTime = 0;
-    
+    private AudioStateMachine audioStateMachine = AudioStateMachine.StartMusic;
+
+
     private void Update()
     {
-        if (Time.time - previousTime > spawnTime)
+        float deltaTime = Time.time - previousTime;
+        switch (audioStateMachine)
         {
-            previousTime = Time.time;
-            createNewTetromino();
+            case AudioStateMachine.StartMusic:
+                AudioManager.Instance.Play("Init");
+                audioStateMachine = AudioStateMachine.SpawnTretomino;
+                break;
+            case AudioStateMachine.SpawnTretomino:
+                if (deltaTime > AudioManager.Instance.GetSound("Init").momentHighPointCycle)
+                {
+                    Debug.Log("AAAA");
+                    createNewTetromino();
+                    audioStateMachine = AudioStateMachine.EndingCycle;
+                }
+                break;
+            case AudioStateMachine.EndingCycle:
+                if (deltaTime > AudioManager.Instance.TimeCourse("Init"))
+                {
+                    previousTime = Time.time;
+                    audioStateMachine = AudioStateMachine.StartMusic;
+                }
+                break;
         }
     }
 

@@ -42,14 +42,20 @@ public class AudioManager : MonoBehaviour
     public void Play(string name)
     {
         Sound sound = GetSound(name);
+
         if (sound == null) { return; }
-        if (sound.EndCycle())
+        if (sound.IsStop())
+        {
+            sound.Play();
+        }
+        else if (sound.EndCycle() )
         {
             sound.Reset();
-            sound.source.Play();
+            sound.Play();
         }
         else
         {
+            Debug.Log("BBB");
             sound.AddCycle();
         }
        
@@ -57,21 +63,26 @@ public class AudioManager : MonoBehaviour
 
     public void Stop(string name)
     {
-        Sound sound = GetSound(name);
+        Sound sound = GetSound(name);   
         if (sound == null) { return; }
-        sound.source.Stop();
-        sound.Reset();
+        sound.Stop();
     }
 
     public Sound GetSound( string name)
     {
-        foreach (Sound s in sounds)
+        foreach (Sound sound in sounds)
         {
-            if (s.name == name)
+            if (sound.name == name)
             {
-                return s;
+                return sound;
             }
         }
         return null;
+    }
+
+    public float TimeCourse(string name)
+    {
+        Sound sound = GetSound(name);
+        return sound.source.clip.length / sound.totalCycles;
     }
 }
