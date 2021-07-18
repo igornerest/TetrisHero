@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
@@ -16,7 +14,7 @@ public class AudioManager : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = new GameObject("GM").AddComponent<AudioManager>();
+                instance = new GameObject("AudioManager").AddComponent<AudioManager>();
             }
             return instance;
         }
@@ -29,45 +27,55 @@ public class AudioManager : MonoBehaviour
             DestroyImmediate(this);
             return;
         }
-        instance = this;
 
+        instance = this;
         DontDestroyOnLoad(gameObject);
-        foreach( Sound s in sounds ){
+
+        foreach (Sound sound in sounds)
+        {
             gameObject.AddComponent<AudioSource>();
-            s.source = gameObject.AddComponent<AudioSource>();
-            s.source.clip = s.clip;
+            sound.source = gameObject.AddComponent<AudioSource>();
+            sound.source.clip = sound.clip;
         }
     }
 
-    public void Play(string name)
+    public bool Play()
     {
-        Sound sound = GetSound(name);
+        // TODO - Abstract Sound transitions automaticaly
+        string name = "Init";
 
-        if (sound == null) { return; }
+        Sound sound = GetSound(name);
+        if (sound == null)
+            return false;
+
         if (sound.IsStop())
         {
-            sound.Play();
-        }
-        else if (sound.EndCycle() )
-        {
-            sound.Reset();
-            sound.Play();
-        }
-        else
-        {
+            Debug.Log("New Cycle");
             sound.AddCycle();
+            sound.Play();
+            return true;
         }
-       
+        else if (sound.HasCompletedCyles())
+        {
+            Debug.Log("Restarting Cycles");
+            sound.AddCycle();
+            sound.Reset();
+            return true;
+        }
+
+        return false;       
     }
 
     public void Stop(string name)
     {
-        Sound sound = GetSound(name);   
-        if (sound == null) { return; }
+        Sound sound = GetSound(name);
+        if (sound == null)
+            return;
+
         sound.Stop();
     }
 
-    public Sound GetSound( string name)
+    public Sound GetSound(string name)
     {
         foreach (Sound sound in sounds)
         {
@@ -79,9 +87,8 @@ public class AudioManager : MonoBehaviour
         return null;
     }
 
-    public float TimeCourse(string name)
+    public float GetMomentHighPointCycle()
     {
-        Sound sound = GetSound(name);
-        return sound.source.clip.length / sound.totalCycles;
+        return GetSound("Init").momentHighPointCycle;
     }
 }

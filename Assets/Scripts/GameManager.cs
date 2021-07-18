@@ -6,9 +6,11 @@ public class GameManager : MonoBehaviour
 
     private Transform firstArena;
     private Transform secondArena;
-
     private PlayerController firstPlayer;
     private PlayerController secondPlayer;
+
+    private Transform currentArena;
+    private bool isGameSet = false;
 
     private static GameManager instance = null;
 
@@ -47,6 +49,17 @@ public class GameManager : MonoBehaviour
             Application.Quit();
 #endif
         }
+
+        if (isGameSet)
+        {
+            if (AudioManager.Instance.Play())
+            {
+                float momentHighPointCycle = AudioManager.Instance.GetMomentHighPointCycle();
+                currentArena.Find("ArenaManager").GetComponent<ArenaManager>().ScheduleTetrominoFall(momentHighPointCycle);
+
+                currentArena = currentArena == firstArena ? secondArena : firstArena;
+            }
+        }
     }
 
     public void SetArenas()
@@ -61,12 +74,13 @@ public class GameManager : MonoBehaviour
         this.firstPlayer.playerArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.enemyArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.playerId = 1;
-        this.firstPlayer.playerArenaManager.turn = true;
 
         this.secondPlayer = new GameObject("SecondPlayer").AddComponent<PlayerController>();
         this.secondPlayer.playerArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.enemyArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.playerId = 2;
-        this.secondPlayer.playerArenaManager.turn = false;
+
+        this.currentArena = firstArena;
+        this.isGameSet = true;
     }
 }

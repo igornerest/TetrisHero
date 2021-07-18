@@ -4,16 +4,20 @@
 public class Sound
 {
     public string name;
-    public AudioClip clip;
-    [Range(0f, 1f)]
+    
+    [Range(0f, 1f)] 
     public float volume;
-    [HideInInspector]
+    
+    [HideInInspector] 
     public AudioSource source;
+    public AudioClip clip;
+
     public int totalCycles;
     public float momentHighPointCycle;
 
-    private int howManyCycles;
-    private bool stop = true;
+    private int howManyCycles = 0;
+    private float lastPlaybackPosition = 0;
+
     public void AddCycle()
     {
         howManyCycles++;
@@ -21,14 +25,10 @@ public class Sound
 
     public bool IsStop()
     {
-        if( stop) { return true; }
-        else if (EndCycle())
-        { 
-            stop = true; 
-        }
-        return stop;
+        return !source.isPlaying;
     }
-    public bool EndCycle()
+
+    public bool HasCompletedCyles()
     {
         return howManyCycles == totalCycles;
     }
@@ -36,18 +36,24 @@ public class Sound
     public void Stop()
     {
         source.Stop();
-        Reset();
     }
 
     public void Reset()
     {
         howManyCycles = 0;
-        stop = true;
+        lastPlaybackPosition = 0;
+        Play();
     }
 
     public void Play()
     {
+        float playbackDuration = clip.length / totalCycles;
+
+        source.time = lastPlaybackPosition;
+        source.volume = volume;
         source.Play();
-        stop = false;
+        source.SetScheduledEndTime(AudioSettings.dspTime + playbackDuration);
+
+        lastPlaybackPosition += playbackDuration;
     }
 }

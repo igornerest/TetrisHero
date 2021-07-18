@@ -1,13 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
-enum AudioStateMachine
-{
-    StartMusic,
-    SpawnTretomino,
-    EndingCycle
-}
 
 public class ArenaManager : MonoBehaviour
 {
@@ -17,47 +9,34 @@ public class ArenaManager : MonoBehaviour
     public GameObject[] Tetrominoes;
     public Vector3 spawnPosition;
     public Material plaaformMaterial;
-    
+
     public float fallTime = 0.5f;
-    public bool turn;
 
     private Transform[,] grid = new Transform[width, height];
     private HashSet<Transform> fallingPieces = new HashSet<Transform>();
 
     private float previousTime = 0;
-    private AudioStateMachine audioStateMachine = AudioStateMachine.StartMusic;
-
+    private float nextTetrominoTime = 0;
+    private bool hasTetrominoFallScheduled = false;
 
     private void Update()
     {
-        float deltaTime = Time.time - previousTime;
-        switch (audioStateMachine)
+        if (hasTetrominoFallScheduled && Time.time - previousTime > nextTetrominoTime)
         {
-            case AudioStateMachine.StartMusic:
-                AudioManager.Instance.Play("Init");
-                audioStateMachine = AudioStateMachine.SpawnTretomino;
-                break;
-            case AudioStateMachine.SpawnTretomino:
-                if (deltaTime > AudioManager.Instance.GetSound("Init").momentHighPointCycle)
-                {
-                    createNewTetromino();
-                    audioStateMachine = AudioStateMachine.EndingCycle;
-                }
-                break;
-            case AudioStateMachine.EndingCycle:
-                if (deltaTime > AudioManager.Instance.TimeCourse("Init"))
-                {
-                    previousTime = Time.time;
-                    audioStateMachine = AudioStateMachine.StartMusic;
-                    turn = !turn;
-                }
-                break;
+            createNewTetromino();
+            hasTetrominoFallScheduled = false;
         }
     }
 
     private void LateUpdate()
     {
         CheckLines();
+    }
+
+    public void ScheduleTetrominoFall(float nextTetrominoTime) {
+        hasTetrominoFallScheduled = true;
+        previousTime = Time.time;
+        this.nextTetrominoTime = nextTetrominoTime;
     }
 
     public bool DropTetromino(Transform tetromino)
@@ -128,13 +107,10 @@ public class ArenaManager : MonoBehaviour
 
     private void createNewTetromino()
     {
-        if (turn == true)
-        {
-            int randomIndex = Random.Range(0, Tetrominoes.Length);
-            GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
-            tetromino.GetComponent<TetrisBlock>().arenaManager = this;
-            fallingPieces.Add(tetromino.transform);
-        }
+        int randomIndex = Random.Range(0, Tetrominoes.Length);
+        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
+        tetromino.GetComponent<TetrisBlock>().arenaManager = this;
+        fallingPieces.Add(tetromino.transform);
     }
 
     private void AddToGrid(Transform tetromino)
