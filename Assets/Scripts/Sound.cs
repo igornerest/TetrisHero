@@ -11,7 +11,7 @@ public class Sound
     [HideInInspector] 
     public AudioSource source;
     public AudioClip clip;
-
+    
     public int totalCycles;
     public float momentHighPointCycle;
 
