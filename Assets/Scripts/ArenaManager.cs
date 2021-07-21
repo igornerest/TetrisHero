@@ -19,6 +19,8 @@ public class ArenaManager : MonoBehaviour
     private float nextTetrominoTime = 0;
     private bool hasTetrominoFallScheduled = false;
 
+    private bool uncapableOfSpawn = false;
+
     private void Update()
     {
         if (hasTetrominoFallScheduled && Time.time - previousTime > nextTetrominoTime)
@@ -26,6 +28,7 @@ public class ArenaManager : MonoBehaviour
             createNewTetromino();
             hasTetrominoFallScheduled = false;
         }
+        
     }
 
     private void LateUpdate()
@@ -121,7 +124,11 @@ public class ArenaManager : MonoBehaviour
             int roundedX = Mathf.RoundToInt(blockLocalPosition.x);
             int roundedY = Mathf.RoundToInt(blockLocalPosition.z);
 
-            grid[roundedX, roundedY] = block;
+            if (grid[roundedX, roundedY] == null) {
+                grid[roundedX, roundedY] = block;
+            } else {
+                uncapableOfSpawn = true;
+            }
             block.GetComponent<MeshRenderer>().material = plaaformMaterial;
         }
     }
@@ -181,5 +188,9 @@ public class ArenaManager : MonoBehaviour
                 grid[col, row] = null;
             }
         }
+    }
+
+    public bool IsPossibleToSpawn() {
+        return !uncapableOfSpawn;
     }
 }

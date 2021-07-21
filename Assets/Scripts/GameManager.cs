@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -60,6 +61,14 @@ public class GameManager : MonoBehaviour
                 currentArena = currentArena == firstArena ? secondArena : firstArena;
             }
         }
+
+        if (firstPlayer.playerArenaManager.IsPossibleToSpawn()) {
+            SceneManager.LoadScene("GameOver");
+        }
+        if (secondPlayer.playerArenaManager.IsPossibleToSpawn()) {
+            SceneManager.LoadScene("GameOver");
+        }
+
     }
 
     public void SetArenas()
