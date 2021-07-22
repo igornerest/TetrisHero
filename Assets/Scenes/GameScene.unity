@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -550,21 +550,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sounds:
   - name: One
-    clip: {fileID: 8300000, guid: 8bc536f880a50884886046b92a0c5189, type: 3}
     volume: 0.2
     source: {fileID: 0}
+    clip: {fileID: 8300000, guid: 8bc536f880a50884886046b92a0c5189, type: 3}
     totalCycles: 1
     momentHighPointCycle: 0.9
   - name: Init
-    clip: {fileID: 8300000, guid: 6ba9807b9b021594c9ffda431acde9ab, type: 3}
     volume: 0.2
     source: {fileID: 0}
+    clip: {fileID: 8300000, guid: 6ba9807b9b021594c9ffda431acde9ab, type: 3}
     totalCycles: 55
     momentHighPointCycle: 0.9
   - name: Final
-    clip: {fileID: 8300000, guid: 77e2026810442c2408484a6893e40131, type: 3}
     volume: 0.2
     source: {fileID: 0}
+    clip: {fileID: 8300000, guid: 77e2026810442c2408484a6893e40131, type: 3}
     totalCycles: 27
     momentHighPointCycle: 0.9
 --- !u!4 &1025691919
@@ -587,6 +587,51 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 549583203}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1296928523 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3041324692745366628, guid: d21279ae58537294ea6c2bb7a8acd889,
+    type: 3}
+  m_PrefabInstance: {fileID: 1470540821707962492}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1296928525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1296928523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &1296928526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1296928523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 1296928525}
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1521736858
 GameObject:
   m_ObjectHideFlags: 0
@@ -597,6 +642,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1521736860}
   - component: {fileID: 1521736859}
+  - component: {fileID: 1521736861}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -632,6 +678,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1521736861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521736858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!114 &1593660907 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6338952989886106197, guid: d21279ae58537294ea6c2bb7a8acd889,

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourPunCallbacks
 {
     public Transform arenaPrefab;
 
@@ -14,6 +15,12 @@ public class GameManager : MonoBehaviour
     private bool isGameSet = false;
 
     private static GameManager instance = null;
+
+    public GameManager instace {get; private set;}
+
+    private int _jogadoresEmJogo = 0;
+
+    [SerializeField] private string _localizacaoPrefab;
 
     public static GameManager Instance
     {
@@ -29,8 +36,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
+        if (instance != null && instance != this)
         {
+            gameObject.SetActive(false);
             DestroyImmediate(this);
             return;
         }
@@ -39,6 +47,11 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this);
         SetArenas();
     }
+
+
+    //private void Start() {
+    //    photonView.RPC("AdicionaJogador", RpcTarget.AllBuffered);
+    //}
 
     private void Update()
     {
@@ -61,12 +74,14 @@ public class GameManager : MonoBehaviour
                 currentArena = currentArena == firstArena ? secondArena : firstArena;
             }
         }
-
-        if (firstPlayer.playerArenaManager.IsPossibleToSpawn()) {
+        
+        if (!firstPlayer.playerArenaManager.IsPossibleToSpawn() && SceneManager.GetActiveScene().name != "GameOver") {            
+            isGameSet = false;
             SceneManager.LoadScene("GameOver");
         }
-        if (secondPlayer.playerArenaManager.IsPossibleToSpawn()) {
-            SceneManager.LoadScene("GameOver");
+        if (!secondPlayer.playerArenaManager.IsPossibleToSpawn() && SceneManager.GetActiveScene().name != "GameOver") {
+            isGameSet = false;
+            SceneManager.LoadScene("GameOver");            
         }
 
     }
@@ -92,4 +107,17 @@ public class GameManager : MonoBehaviour
         this.currentArena = firstArena;
         this.isGameSet = true;
     }
+
+    //[PunRPC]
+    //private void AdicionaJogador() {
+    //    _jogadoresEmJogo++;
+    //    if (_jogadoresEmJogo == PhotonNetwork.PlayerList.Length) {
+    //        CriaJogador();
+    //    }
+    //}
+
+    //private void CriaJogador() {
+    //    var jogadorObj = PhotonNetwork.Instantiate(_localizacaoPrefab, new Vector3(20, 0, 0), Quaternion.identity);
+    //    var jogador = jogadorObj.GetComponent<ArenaManager>();
+    //}
 }
