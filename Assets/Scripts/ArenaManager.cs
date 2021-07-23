@@ -124,9 +124,13 @@ public class ArenaManager : MonoBehaviour
             int roundedX = Mathf.RoundToInt(blockLocalPosition.x);
             int roundedY = Mathf.RoundToInt(blockLocalPosition.z);
 
-            if (grid[roundedX, roundedY] == null) {
+
+            if (grid[roundedX, roundedY] == null)
+            {
                 grid[roundedX, roundedY] = block;
-            } else {
+            }
+            else
+            {
                 uncapableOfSpawn = true;
             }
             block.GetComponent<MeshRenderer>().material = plaaformMaterial;
@@ -190,7 +194,8 @@ public class ArenaManager : MonoBehaviour
         }
     }
 
-    public bool IsPossibleToSpawn() {
+    public bool IsPossibleToSpawn()
+    {
         return !uncapableOfSpawn;
     }
 }
