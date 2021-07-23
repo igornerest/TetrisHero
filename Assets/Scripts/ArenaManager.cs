@@ -12,6 +12,8 @@ public class ArenaManager : MonoBehaviour
 
     public float fallTime = 0.5f;
 
+    public bool isStandardOrientation;
+
     private Transform[,] grid = new Transform[width, height];
     private HashSet<Transform> fallingPieces = new HashSet<Transform>();
 
@@ -110,7 +112,9 @@ public class ArenaManager : MonoBehaviour
     private void createNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
-        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
+        Vector3 realSpawnPosition = isStandardOrientation ? spawnPosition : -spawnPosition;
+        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + realSpawnPosition, this.transform.rotation, transform);
+        
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
         fallingPieces.Add(tetromino.transform);
     }

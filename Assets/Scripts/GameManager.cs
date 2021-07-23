@@ -79,18 +79,23 @@ public class GameManager : MonoBehaviour
         this.firstArena = Instantiate(arenaPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         this.firstArena.name = "FirstArena";
 
-        this.secondArena = Instantiate(arenaPrefab, new Vector3(20, 0, 0), Quaternion.identity);
+        this.secondArena = Instantiate(arenaPrefab, new Vector3(9, 0, 35), Quaternion.identity);
         this.secondArena.name = "SecondArena";
+        
 
         this.firstPlayer = new GameObject("FirstPlayer").AddComponent<PlayerController>();
         this.firstPlayer.playerArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.enemyArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.playerId = 1;
+        this.firstPlayer.playerArenaManager.isStandardOrientation = true;
 
         this.secondPlayer = new GameObject("SecondPlayer").AddComponent<PlayerController>();
         this.secondPlayer.playerArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.enemyArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.playerId = 2;
+        this.secondPlayer.playerArenaManager.isStandardOrientation = false;
+
+        this.secondArena.transform.rotation = new Quaternion(0, 180, 0, 1);
 
         this.currentArena = firstArena;
         this.isGameSet = true;
