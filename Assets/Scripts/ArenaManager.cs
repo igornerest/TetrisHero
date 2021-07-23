@@ -12,6 +12,8 @@ public class ArenaManager : MonoBehaviour
 
     public float fallTime = 0.5f;
 
+    public bool isStandardOrientation;
+
     private Transform[,] grid = new Transform[width, height];
     private HashSet<Transform> fallingPieces = new HashSet<Transform>();
 
@@ -19,6 +21,8 @@ public class ArenaManager : MonoBehaviour
     private float nextTetrominoTime = 0;
     private Transform nextTetromino;
     private bool hasTetrominoFallScheduled = false;
+
+    private bool uncapableOfSpawn = false;
 
     private void Update()
     {
@@ -134,7 +138,9 @@ public class ArenaManager : MonoBehaviour
     private GameObject CreateNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
-        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
+        Vector3 realSpawnPosition = isStandardOrientation ? spawnPosition : -spawnPosition;
+        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + realSpawnPosition, this.transform.rotation, transform);
+        
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
 
         return tetromino;
@@ -148,7 +154,14 @@ public class ArenaManager : MonoBehaviour
             int roundedX = Mathf.RoundToInt(blockLocalPosition.x);
             int roundedY = Mathf.RoundToInt(blockLocalPosition.z);
 
-            grid[roundedX, roundedY] = block;
+            if (grid[roundedX, roundedY] == null)
+            {
+                grid[roundedX, roundedY] = block;
+            }
+            else
+            {
+                uncapableOfSpawn = true;
+            }
             block.GetComponent<MeshRenderer>().material = plaaformMaterial;
         }
     }
@@ -208,5 +221,10 @@ public class ArenaManager : MonoBehaviour
                 grid[col, row] = null;
             }
         }
+    }
+
+    public bool IsPossibleToSpawn()
+    {
+        return !uncapableOfSpawn;
     }
 }
