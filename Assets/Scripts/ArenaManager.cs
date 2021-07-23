@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using MLAPI;
 
-public class ArenaManager : MonoBehaviour
+public class ArenaManager : NetworkBehaviour
 {
     public static int height = 15;
     public static int width = 10;
@@ -23,7 +24,7 @@ public class ArenaManager : MonoBehaviour
     {
         if (hasTetrominoFallScheduled && Time.time - previousTime > nextTetrominoTime)
         {
-            createNewTetromino();
+            CreateNewTetromino();
             hasTetrominoFallScheduled = false;
         }
     }
@@ -104,8 +105,7 @@ public class ArenaManager : MonoBehaviour
 
         }
     }
-
-    private void createNewTetromino()
+    private void CreateNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
         GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);

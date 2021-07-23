@@ -146,7 +146,6 @@ MonoBehaviour:
   - {fileID: 4324349307368231923, guid: c444475a8a7730d4182fb7899273f9ba, type: 3}
   spawnPosition: {x: 5, y: 0, z: 12}
   plaaformMaterial: {fileID: 2100000, guid: 6c8181482a9ecb04f98c8498d5c84f53, type: 2}
-  spawnTime: 2.5
   fallTime: 0.5
 --- !u!1 &2875711874794504998
 GameObject:

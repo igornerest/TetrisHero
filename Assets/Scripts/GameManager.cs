@@ -1,4 +1,7 @@
 ﻿using UnityEngine;
+using MLAPI;
+using MLAPI.NetworkVariable;
+using MLAPI.Messaging;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,9 +13,10 @@ public class GameManager : MonoBehaviour
     private PlayerController secondPlayer;
 
     private Transform currentArena;
-    private bool isGameSet = false;
 
     private static GameManager instance = null;
+
+    public NetworkVariableUInt count = new NetworkVariableUInt(0);
 
     public static GameManager Instance
     {
@@ -26,6 +30,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public bool IsGameOn { get; private set; }
+
     private void Awake()
     {
         if (instance != null)
@@ -36,9 +42,31 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(this);
-        SetArenas();
+        IsGameOn = false;
     }
 
+    public void AddPlayer(Transform newPlayer)
+    {
+        if (firstPlayer == null)
+        {
+            firstPlayer = newPlayer.GetComponent<PlayerController>();
+            firstPlayer.name = "FirstPlayer";
+            firstPlayer.playerId = 1;
+        }
+        else if (secondPlayer == null)
+        {
+            secondPlayer = newPlayer.GetComponent<PlayerController>();
+            secondPlayer.name = "SecondPlayer";
+            secondPlayer.playerId = 2;
+        }
+
+        if (firstPlayer && secondPlayer)
+        {
+            SetArenas();
+        }
+    }
+
+    [ServerRpc]
     private void Update()
     {
         if (Input.GetKey(KeyCode.Escape))
@@ -50,7 +78,7 @@ public class GameManager : MonoBehaviour
 #endif
         }
 
-        if (isGameSet)
+        if (IsGameOn)
         {
             if (AudioManager.Instance.Play())
             {
@@ -70,17 +98,13 @@ public class GameManager : MonoBehaviour
         this.secondArena = Instantiate(arenaPrefab, new Vector3(20, 0, 0), Quaternion.identity);
         this.secondArena.name = "SecondArena";
 
-        this.firstPlayer = new GameObject("FirstPlayer").AddComponent<PlayerController>();
         this.firstPlayer.playerArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.enemyArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
-        this.firstPlayer.playerId = 1;
-
-        this.secondPlayer = new GameObject("SecondPlayer").AddComponent<PlayerController>();
+    
         this.secondPlayer.playerArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.enemyArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
-        this.secondPlayer.playerId = 2;
 
         this.currentArena = firstArena;
-        this.isGameSet = true;
+        this.IsGameOn = true; 
     }
 }

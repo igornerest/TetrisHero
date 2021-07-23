@@ -1,15 +1,33 @@
 ﻿using UnityEngine;
+using MLAPI;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     public ArenaManager playerArenaManager;
     public ArenaManager enemyArenaManager;
     public int playerId;
 
+    private void Awake()
+    {
+        GameManager.Instance.AddPlayer(transform);
+    }
+
     private void Update()
     {
-        KeyCode leftMovvement = playerId == 1 ? KeyCode.LeftArrow : KeyCode.A;
-        KeyCode rightMovement = playerId == 1 ? KeyCode.RightArrow : KeyCode.D;
+        if (!GameManager.Instance.IsGameOn)
+            return;
+
+        if (IsLocalPlayer) {
+            MoveGrid();
+        }
+
+        // TODO: Atack movement
+    }
+
+    private void MoveGrid()
+    {
+        KeyCode leftMovvement = KeyCode.LeftArrow;
+        KeyCode rightMovement = KeyCode.RightArrow;
 
         if (Input.GetKeyDown(leftMovvement))
         {
@@ -19,8 +37,6 @@ public class PlayerController : MonoBehaviour
         {
             playerArenaManager.TranslateGrid(+1);
         }
-
-        // TODO: Atack movement
     }
 
 }
