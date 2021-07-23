@@ -17,13 +17,13 @@ public class ArenaManager : MonoBehaviour
 
     private float previousTime = 0;
     private float nextTetrominoTime = 0;
+    private Transform nextTetromino;
     private bool hasTetrominoFallScheduled = false;
 
     private void Update()
     {
         if (hasTetrominoFallScheduled && Time.time - previousTime > nextTetrominoTime)
         {
-            createNewTetromino();
             hasTetrominoFallScheduled = false;
         }
     }
@@ -34,8 +34,16 @@ public class ArenaManager : MonoBehaviour
     }
 
     public void ScheduleTetrominoFall(float nextTetrominoTime) {
-        hasTetrominoFallScheduled = true;
-        previousTime = Time.time;
+        if (nextTetromino)
+        {
+            nextTetromino.GetComponent<TetrisBlock>().SetReady();
+            fallingPieces.Add(nextTetromino);
+
+            hasTetrominoFallScheduled = true;
+            previousTime = Time.time;
+        }
+
+        nextTetromino = CreateNewTetromino().transform;
         this.nextTetrominoTime = nextTetrominoTime;
     }
 
@@ -57,6 +65,24 @@ public class ArenaManager : MonoBehaviour
         
         tetromino.position += Vector3.back;
         return true;
+    }
+
+    public void TranslateSpawnPosition(int direction)
+    {
+        int newPosition = Mathf.RoundToInt(spawnPosition.x) + direction;
+
+        // Avoid borders so tetrominoes can be rotated
+        if (newPosition <= 0)
+        {
+            newPosition = width - 2;
+        }
+        else if (newPosition >= width - 1)
+        {
+            newPosition = 1;
+        }
+
+        spawnPosition.x = newPosition;
+        if (nextTetromino) nextTetromino.position = transform.position + spawnPosition;
     }
 
     public void TranslateGrid(int direction)
@@ -105,12 +131,13 @@ public class ArenaManager : MonoBehaviour
         }
     }
 
-    private void createNewTetromino()
+    private GameObject CreateNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
         GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
-        fallingPieces.Add(tetromino.transform);
+
+        return tetromino;
     }
 
     private void AddToGrid(Transform tetromino)

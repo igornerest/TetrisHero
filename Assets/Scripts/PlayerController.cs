@@ -14,13 +14,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(leftMovvement))
         {
             playerArenaManager.TranslateGrid(-1);
+            enemyArenaManager.TranslateSpawnPosition(-1);
         }
         if (Input.GetKeyDown(rightMovement))
         {
             playerArenaManager.TranslateGrid(+1);
+            enemyArenaManager.TranslateSpawnPosition(+1);
         }
-
-        // TODO: Atack movement
     }
 
 }

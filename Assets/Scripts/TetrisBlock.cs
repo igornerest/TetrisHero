@@ -5,11 +5,17 @@ public class TetrisBlock : MonoBehaviour
     public Vector3 rotationPoint;
     public ArenaManager arenaManager;
 
-    private float previousTime = 0;
+    private float previousTime;
+    private bool isReadyToFall = false;
+
+    private void Awake()
+    {
+        ChangeTranparency(0.5f);
+    }
 
     private void Update()
     {
-        if (Time.time - previousTime > arenaManager.fallTime)
+        if (isReadyToFall && Time.time - previousTime > arenaManager.fallTime)
         {
             if (arenaManager.DropTetromino(transform) == false)
                 this.enabled = false;
@@ -33,5 +39,23 @@ public class TetrisBlock : MonoBehaviour
     public Vector3 GetBlockLocalPosition(Transform block)
     {
         return transform.localPosition + block.localPosition;
+    }
+
+    public void SetReady()
+    {
+        isReadyToFall = true;
+        previousTime = Time.time;
+        ChangeTranparency(1f);
+    }
+
+    private void ChangeTranparency(float transp)
+    {
+        foreach (Transform block in transform)
+        {
+            Renderer meshRenderer = block.GetComponent<Renderer>();
+            Color textureColor = meshRenderer.material.color;
+            textureColor.a = transp;
+            meshRenderer.material.color = textureColor;
+        }
     }
 }
