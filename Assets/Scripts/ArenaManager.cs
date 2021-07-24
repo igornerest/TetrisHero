@@ -24,6 +24,19 @@ public class ArenaManager : MonoBehaviour
 
     private bool uncapableOfSpawn = false;
 
+    private void Start()
+    {
+        if (this.isStandardOrientation)
+        {
+            spawnPosition = new Vector3(5, 0, 12);
+        }
+        else
+        {
+            spawnPosition = new Vector3(5, 0, 1);
+        }
+            
+    }
+
     private void Update()
     {
         if (hasTetrominoFallScheduled && Time.time - previousTime > nextTetrominoTime)
@@ -53,21 +66,34 @@ public class ArenaManager : MonoBehaviour
 
     public bool DropTetromino(Transform tetromino)
     {
+        if (isStandardOrientation) {
+            return DropTetromino(tetromino, -1, 0 , Vector3.back , true);
+        }
+        else
+        {
+            return DropTetromino(tetromino, +1, height, Vector3.forward ,false);
+        }
+    }
+    
+    private bool DropTetromino(Transform tetromino, int downCubes , int limitDownCubes , Vector3 downTetromino , bool addTetrominoInGridWhenItsDown)
+    {
         foreach (Transform block in tetromino)
         {
             Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
             int roundedX = Mathf.RoundToInt(blockLocalPosition.x);
-            int roundedY = Mathf.RoundToInt(blockLocalPosition.z) - 1;
- 
-            if (roundedY < 0 || grid[roundedX, roundedY] != null)
+            int roundedY = Mathf.RoundToInt(blockLocalPosition.z) + downCubes;
+
+            bool isPossibleToAddOnGrid = addTetrominoInGridWhenItsDown ? roundedY < limitDownCubes : roundedY >= limitDownCubes;
+
+            if (isPossibleToAddOnGrid || grid[roundedX, roundedY] != null)
             {
                 AddToGrid(tetromino);
                 fallingPieces.Remove(tetromino);
                 return false;
             }
         }
-        
-        tetromino.position += Vector3.back;
+
+        tetromino.position += downTetromino;
         return true;
     }
 
@@ -138,11 +164,8 @@ public class ArenaManager : MonoBehaviour
     private GameObject CreateNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
-        Vector3 realSpawnPosition = isStandardOrientation ? spawnPosition : -spawnPosition;
-        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + realSpawnPosition, this.transform.rotation, transform);
-        
+        GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, this.transform.parent.rotation, transform);
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
-
         return tetromino;
     }
 

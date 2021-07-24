@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
         this.firstArena = Instantiate(arenaPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         this.firstArena.name = "FirstArena";
 
-        this.secondArena = Instantiate(arenaPrefab, new Vector3(9, 0, 35), Quaternion.identity);
+        this.secondArena = Instantiate(arenaPrefab, new Vector3(0, 0, 20 ), Quaternion.identity);
         this.secondArena.name = "SecondArena";
         
 
@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
         this.secondPlayer.playerId = 2;
         this.secondPlayer.playerArenaManager.isStandardOrientation = false;
 
-        this.secondArena.transform.rotation = new Quaternion(0, 180, 0, 1);
+        //this.secondArena.transform.rotation = new Quaternion(0, 180, 0, 1);
 
         this.currentArena = firstArena;
         this.isGameSet = true;
