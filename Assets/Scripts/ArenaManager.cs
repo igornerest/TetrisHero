@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class ArenaManager : MonoBehaviour
 {
@@ -133,7 +134,21 @@ public class ArenaManager : MonoBehaviour
 
                 if (grid[col, row] != null)
                 {
-                    grid[col, row].transform.position = transform.position + new Vector3(col, 0, row);
+                    float positionX = transform.position.x + col;
+                    
+                    bool teletranportOnRight = Mathf.CeilToInt(positionX) == 0 && direction == 1;
+                    bool teletranportOnLeft = Mathf.CeilToInt(positionX) == width - 1 && direction == -1;
+                    if (teletranportOnLeft || teletranportOnRight)
+                    {
+                        grid[col, row].transform.position = new Vector3(positionX, 0, grid[col, row].transform.position.y);
+                    }
+                    else
+                    {
+                        grid[col, row].transform.DOMoveX(positionX, 0.1f);
+                    }
+
+                    float positionZ = transform.position.z + row;
+                    grid[col, row].transform.DOMoveZ(positionZ, 0.1f);
                 }
 
                 col += direction;
