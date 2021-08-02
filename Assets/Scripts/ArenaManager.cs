@@ -35,7 +35,7 @@ public class ArenaManager : MonoBehaviour
         {
             spawnPosition = new Vector3(5, 0, 1);
         }
-            
+
     }
 
     private void Update()
@@ -51,7 +51,8 @@ public class ArenaManager : MonoBehaviour
         CheckLines();
     }
 
-    public void ScheduleTetrominoFall(float nextTetrominoTime) {
+    public void ScheduleTetrominoFall(float nextTetrominoTime)
+    {
         if (nextTetromino)
         {
             nextTetromino.GetComponent<TetrisBlock>().SetReady();
@@ -67,16 +68,17 @@ public class ArenaManager : MonoBehaviour
 
     public bool DropTetromino(Transform tetromino)
     {
-        if (isStandardOrientation) {
-            return DropTetromino(tetromino, -1, 0 , Vector3.back , true);
+        if (isStandardOrientation)
+        {
+            return DropTetromino(tetromino, -1, 0, Vector3.back, true);
         }
         else
         {
-            return DropTetromino(tetromino, +1, height, Vector3.forward ,false);
+            return DropTetromino(tetromino, +1, height, Vector3.forward, false);
         }
     }
-    
-    private bool DropTetromino(Transform tetromino, int downCubes , int limitDownCubes , Vector3 downTetromino , bool addTetrominoInGridWhenItsDown)
+
+    private bool DropTetromino(Transform tetromino, int downCubes, int limitDownCubes, Vector3 downTetromino, bool addTetrominoInGridWhenItsDown)
     {
         foreach (Transform block in tetromino)
         {
@@ -111,21 +113,24 @@ public class ArenaManager : MonoBehaviour
         {
             newPosition = 1;
         }
-
-        spawnPosition.x = newPosition;
-        if (nextTetromino) nextTetromino.position = transform.position + spawnPosition;
+        //spawnPosition.x = newPosition;
+        if (nextTetromino)
+        {
+            Utils.TranslateSmoothlyX(nextTetromino, transform.position, newPosition, direction, width);
+            spawnPosition.x = newPosition;
+        }
     }
 
     public void TranslateGrid(int direction)
     {
-        ShiftFallingConflictingTetrominoes(direction); 
+        ShiftFallingConflictingTetrominoes(direction);
 
         for (int row = 0; row < height; row++)
         {
             int col = direction > 0 ? 0 : width - 1;
             int lastCol = direction > 0 ? width - 1 : 0;
             Transform lastTransform = grid[lastCol, row];
-            
+
             while (col >= 0 && col < width)
             {
                 Transform tempTransf = grid[col, row];
@@ -134,21 +139,8 @@ public class ArenaManager : MonoBehaviour
 
                 if (grid[col, row] != null)
                 {
-                    float positionX = transform.position.x + col;
-                    
-                    bool teletranportOnRight = Mathf.CeilToInt(positionX) == 0 && direction == 1;
-                    bool teletranportOnLeft = Mathf.CeilToInt(positionX) == width - 1 && direction == -1;
-                    if (teletranportOnLeft || teletranportOnRight)
-                    {
-                        grid[col, row].transform.position = new Vector3(positionX, 0, grid[col, row].transform.position.y);
-                    }
-                    else
-                    {
-                        grid[col, row].transform.DOMoveX(positionX, 0.1f);
-                    }
-
-                    float positionZ = transform.position.z + row;
-                    grid[col, row].transform.DOMoveZ(positionZ, 0.1f);
+                    Utils.TranslateSmoothlyX(grid[col, row].transform, transform.position, col, direction, width);
+                    Utils.TranslateSmoothlyZ(grid[col, row].transform, transform.position, row);
                 }
 
                 col += direction;
@@ -163,13 +155,16 @@ public class ArenaManager : MonoBehaviour
             foreach (Transform block in tetromino)
             {
                 Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
-                int roundedX = (Mathf.RoundToInt(blockLocalPosition.x) - direction + width) % width;
+                int roundedX = direction >= 0 ?
+                    (Mathf.FloorToInt(blockLocalPosition.x) - direction + width) % width
+                :
+                    (Mathf.CeilToInt(blockLocalPosition.x) - direction + width) % width;
                 int roundedY = Mathf.RoundToInt(blockLocalPosition.z);
 
                 if (grid[roundedX, roundedY] != null)
                 {
                     tetromino.GetComponent<TetrisBlock>().ShiftTetromino(direction, width);
-                    break; 
+                    break;
                 }
             }
 

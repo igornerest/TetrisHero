@@ -31,6 +31,10 @@ public class TetrisBlock : MonoBehaviour
             Vector3 blockLocalPosition = GetBlockLocalPosition(block);
 
             int xPosition = (Mathf.RoundToInt(blockLocalPosition.x) + direction) % maxWidth;
+            if(xPosition < 0)
+            {
+                xPosition = maxWidth + xPosition;
+            }
             int yPosition = Mathf.RoundToInt(blockLocalPosition.z);
             block.position = transform.parent.position + new Vector3(xPosition, 0, yPosition);
         }
