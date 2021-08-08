@@ -35,7 +35,7 @@ public class PlayerController : NetworkBehaviour
         if (Input.GetKeyDown(rightMovement))
         {
 
-            GameManager.Instance.Translate(playerId, -1);
+            GameManager.Instance.Translate(playerId, 1);
         }
     }
 
