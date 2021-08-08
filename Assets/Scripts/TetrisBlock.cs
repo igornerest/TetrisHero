@@ -5,8 +5,9 @@ public class TetrisBlock : MonoBehaviour
     public Vector3 rotationPoint;
     public ArenaManager arenaManager;
 
-    private float previousTime;
     private bool isReadyToFall = false;
+
+    private static float tetrominoFallTimeScale = 2f;
 
     private void Awake()
     {
@@ -15,12 +16,10 @@ public class TetrisBlock : MonoBehaviour
 
     private void Update()
     {
-        if (isReadyToFall && Time.time - previousTime > arenaManager.fallTime)
+        if (isReadyToFall)
         {
-            if (arenaManager.DropTetromino(transform) == false)
+            if (arenaManager.DropTetromino(transform, Time.smoothDeltaTime * tetrominoFallTimeScale) == false)
                 this.enabled = false;
-
-            previousTime = Time.time;
         }
     }
 
@@ -30,12 +29,13 @@ public class TetrisBlock : MonoBehaviour
         {
             Vector3 blockLocalPosition = GetBlockLocalPosition(block);
 
-            int xPosition = (Mathf.RoundToInt(blockLocalPosition.x) + direction) % maxWidth;
-            if(xPosition < 0)
+            float yPosition = blockLocalPosition.z;
+            float xPosition = (Mathf.RoundToInt(blockLocalPosition.x) + direction) % maxWidth;
+            if (xPosition < 0)
             {
                 xPosition = maxWidth + xPosition;
             }
-            int yPosition = Mathf.RoundToInt(blockLocalPosition.z);
+            
             block.position = transform.parent.position + new Vector3(xPosition, 0, yPosition);
         }
     }
@@ -48,7 +48,6 @@ public class TetrisBlock : MonoBehaviour
     public void SetReady()
     {
         isReadyToFall = true;
-        previousTime = Time.time;
         ChangeTranparency(1f);
     }
 

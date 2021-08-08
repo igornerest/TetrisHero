@@ -16,7 +16,7 @@ public class Utils
         }
         else
         {
-            transformTarget.DOMoveX(positionX, 0.2f);
+            transformTarget.DOMoveX(positionX, 0.05f);
         }
     }
 

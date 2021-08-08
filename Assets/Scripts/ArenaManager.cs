@@ -66,25 +66,25 @@ public class ArenaManager : MonoBehaviour
         this.nextTetrominoTime = nextTetrominoTime;
     }
 
-    public bool DropTetromino(Transform tetromino)
+    public bool DropTetromino(Transform tetromino, float yMove)
     {
         if (isStandardOrientation)
         {
-            return DropTetromino(tetromino, -1, 0, Vector3.back, true);
+            return DropTetromino(tetromino, -yMove, 0, true);
         }
         else
         {
-            return DropTetromino(tetromino, +1, height, Vector3.forward, false);
+            return DropTetromino(tetromino, +yMove, height, false);
         }
     }
 
-    private bool DropTetromino(Transform tetromino, int downCubes, int limitDownCubes, Vector3 downTetromino, bool addTetrominoInGridWhenItsDown)
+    private bool DropTetromino(Transform tetromino, float downHeight, int limitDownCubes, bool addTetrominoInGridWhenItsDown)
     {
         foreach (Transform block in tetromino)
         {
             Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
-            int roundedX = Mathf.RoundToInt(blockLocalPosition.x);
-            int roundedY = Mathf.RoundToInt(blockLocalPosition.z) + downCubes;
+            int roundedX = Mathf.FloorToInt(blockLocalPosition.x);
+            int roundedY = GetRoundedY(blockLocalPosition.z + downHeight);
 
             bool isPossibleToAddOnGrid = addTetrominoInGridWhenItsDown ? roundedY < limitDownCubes : roundedY >= limitDownCubes;
 
@@ -96,7 +96,8 @@ public class ArenaManager : MonoBehaviour
             }
         }
 
-        tetromino.position += downTetromino;
+        Vector3 movement = new Vector3(0, 0, downHeight);
+        tetromino.position += movement;
         return true;
     }
 
@@ -155,11 +156,10 @@ public class ArenaManager : MonoBehaviour
             foreach (Transform block in tetromino)
             {
                 Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
-                int roundedX = direction >= 0 ?
-                    (Mathf.FloorToInt(blockLocalPosition.x) - direction + width) % width
-                :
-                    (Mathf.CeilToInt(blockLocalPosition.x) - direction + width) % width;
-                int roundedY = Mathf.RoundToInt(blockLocalPosition.z);
+                int roundedX = direction >= 0 
+                    ? (Mathf.FloorToInt(blockLocalPosition.x) - direction + width) % width 
+                    : (Mathf.CeilToInt(blockLocalPosition.x) - direction + width) % width;
+                int roundedY = GetRoundedY(blockLocalPosition.z);
 
                 if (grid[roundedX, roundedY] != null)
                 {
@@ -184,8 +184,8 @@ public class ArenaManager : MonoBehaviour
         foreach (Transform block in tetromino)
         {
             Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
-            int roundedX = Mathf.RoundToInt(blockLocalPosition.x);
-            int roundedY = Mathf.RoundToInt(blockLocalPosition.z);
+            int roundedX = Mathf.FloorToInt(blockLocalPosition.x);
+            int roundedY = GetRoundedY(blockLocalPosition.z);
 
             if (grid[roundedX, roundedY] == null)
             {
@@ -259,5 +259,10 @@ public class ArenaManager : MonoBehaviour
     public bool IsPossibleToSpawn()
     {
         return !uncapableOfSpawn;
+    }
+
+    private int GetRoundedY(float yPos)
+    {
+        return this.isStandardOrientation ? Mathf.FloorToInt(yPos) : Mathf.CeilToInt(yPos);
     }
 }

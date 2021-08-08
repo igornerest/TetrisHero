@@ -327,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationPoint: {x: 0, y: 0, z: 0}
-  fallTime: 2
+  arenaManager: {fileID: 0}
 --- !u!1 &8482873652188679205
 GameObject:
   m_ObjectHideFlags: 0

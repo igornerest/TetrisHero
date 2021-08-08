@@ -233,6 +233,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7051e9273a95fa441ba6959058787a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationPoint: {x: 0, y: 0, z: 0}
+  arenaManager: {fileID: 0}
 --- !u!1 &7305214879016587429
 GameObject:
   m_ObjectHideFlags: 0
