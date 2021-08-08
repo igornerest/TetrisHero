@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
+using MLAPI.Messaging;
 
 public class ArenaManager : NetworkBehaviour
 {
@@ -20,8 +21,16 @@ public class ArenaManager : NetworkBehaviour
     private float nextTetrominoTime = 0;
     private bool hasTetrominoFallScheduled = false;
 
+    public bool hasGameManagerScheduled = false;
+    public float momentHighPointCycle = 0;
+
     private void Update()
     {
+        if (hasGameManagerScheduled)
+        {
+            ScheduleTetrominoFall(momentHighPointCycle);
+        }
+
         if (hasTetrominoFallScheduled && Time.time - previousTime > nextTetrominoTime)
         {
             CreateNewTetromino();
@@ -35,9 +44,11 @@ public class ArenaManager : NetworkBehaviour
     }
 
     public void ScheduleTetrominoFall(float nextTetrominoTime) {
+        Debug.Log("Scheduled");
         hasTetrominoFallScheduled = true;
         previousTime = Time.time;
         this.nextTetrominoTime = nextTetrominoTime;
+        hasGameManagerScheduled = false;
     }
 
     public bool DropTetromino(Transform tetromino)
@@ -105,10 +116,13 @@ public class ArenaManager : NetworkBehaviour
 
         }
     }
+
+    [ServerRpc(RequireOwnership = false)]
     private void CreateNewTetromino()
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
         GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, Quaternion.identity, transform);
+        tetromino.GetComponent<NetworkObject>().Spawn();
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
         fallingPieces.Add(tetromino.transform);
     }

@@ -3,12 +3,12 @@ using MLAPI;
 using MLAPI.NetworkVariable;
 using MLAPI.Messaging;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public Transform arenaPrefab;
 
-    private Transform firstArena;
-    private Transform secondArena;
+    public Transform firstArena;
+    public Transform secondArena;
     private PlayerController firstPlayer;
     private PlayerController secondPlayer;
 
@@ -16,7 +16,10 @@ public class GameManager : MonoBehaviour
 
     private static GameManager instance = null;
 
-    public NetworkVariableUInt count = new NetworkVariableUInt(0);
+    private static NetworkVariableSettings fullWritePermission = new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone };
+    private NetworkVariableInt firstPlayerTranslate = new NetworkVariableInt(fullWritePermission, 0);
+    private NetworkVariableInt secondPlayerTranslate = new NetworkVariableInt(fullWritePermission, 0);
+    private NetworkVariableBool isGameOn = new NetworkVariableBool(fullWritePermission, false);
 
     public static GameManager Instance
     {
@@ -30,7 +33,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public bool IsGameOn { get; private set; }
+    public bool IsGameOn
+    {
+        get
+        {
+            return isGameOn.Value;
+        }
+    }
 
     private void Awake()
     {
@@ -42,31 +51,32 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(this);
-        IsGameOn = false;
+        this.isGameOn.Value = false;
     }
 
-    public void AddPlayer(Transform newPlayer)
+    public NetworkVariableInt AddPlayer(Transform newPlayer)
     {
         if (firstPlayer == null)
         {
             firstPlayer = newPlayer.GetComponent<PlayerController>();
             firstPlayer.name = "FirstPlayer";
             firstPlayer.playerId = 1;
+            return firstPlayerTranslate;
         }
         else if (secondPlayer == null)
         {
             secondPlayer = newPlayer.GetComponent<PlayerController>();
             secondPlayer.name = "SecondPlayer";
             secondPlayer.playerId = 2;
+            return secondPlayerTranslate;
+        }
+        else
+        {
+            return null;
         }
 
-        if (firstPlayer && secondPlayer)
-        {
-            SetArenas();
-        }
     }
 
-    [ServerRpc]
     private void Update()
     {
         if (Input.GetKey(KeyCode.Escape))
@@ -78,33 +88,67 @@ public class GameManager : MonoBehaviour
 #endif
         }
 
-        if (IsGameOn)
+        if (!IsServer)
+            return;
+
+        if (this.isGameOn.Value == false)
+        {
+            if (firstPlayer && secondPlayer)
+            {
+                SetArenas();
+            }
+        }
+        else
         {
             if (AudioManager.Instance.Play())
             {
                 float momentHighPointCycle = AudioManager.Instance.GetMomentHighPointCycle();
-                currentArena.Find("ArenaManager").GetComponent<ArenaManager>().ScheduleTetrominoFall(momentHighPointCycle);
+
+                currentArena.Find("ArenaManager").GetComponent<ArenaManager>().momentHighPointCycle = momentHighPointCycle;
+                currentArena.Find("ArenaManager").GetComponent<ArenaManager>().hasGameManagerScheduled = true;
 
                 currentArena = currentArena == firstArena ? secondArena : firstArena;
+            }
+
+            if (firstPlayerTranslate.Value != 0)
+            {
+                firstArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(firstPlayerTranslate.Value);
+                firstPlayerTranslate.Value = 0;
+            }
+
+            if (secondPlayerTranslate.Value != 0)
+            {
+                secondArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(secondPlayerTranslate.Value);
+                secondPlayerTranslate.Value = 0;
             }
         }
     }
 
     public void SetArenas()
     {
+        Debug.Log("Setting Arenas");
         this.firstArena = Instantiate(arenaPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        this.firstArena.GetComponent<NetworkObject>().Spawn();
         this.firstArena.name = "FirstArena";
 
         this.secondArena = Instantiate(arenaPrefab, new Vector3(20, 0, 0), Quaternion.identity);
+        this.secondArena.GetComponent<NetworkObject>().Spawn();
         this.secondArena.name = "SecondArena";
 
-        this.firstPlayer.playerArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
-        this.firstPlayer.enemyArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
-    
-        this.secondPlayer.playerArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
-        this.secondPlayer.enemyArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
-
         this.currentArena = firstArena;
-        this.IsGameOn = true; 
+        this.isGameOn.Value = true; 
+    }
+
+    public void Translate(int id, int direction)
+    {
+        if (id == firstPlayer.playerId)
+        {
+            firstPlayerTranslate.Value = direction;
+        }
+
+        if (id == secondPlayer.playerId)
+        {
+            secondPlayerTranslate.Value = direction;
+        }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using MLAPI;
+using MLAPI.NetworkVariable;
 
 public class PlayerController : NetworkBehaviour
 {
-    public ArenaManager playerArenaManager;
-    public ArenaManager enemyArenaManager;
     public int playerId;
 
     private void Awake()
@@ -17,7 +16,7 @@ public class PlayerController : NetworkBehaviour
         if (!GameManager.Instance.IsGameOn)
             return;
 
-        if (IsLocalPlayer) {
+        if (IsOwner) {
             MoveGrid();
         }
 
@@ -31,11 +30,12 @@ public class PlayerController : NetworkBehaviour
 
         if (Input.GetKeyDown(leftMovvement))
         {
-            playerArenaManager.TranslateGrid(-1);
+            GameManager.Instance.Translate(playerId, -1);
         }
         if (Input.GetKeyDown(rightMovement))
         {
-            playerArenaManager.TranslateGrid(+1);
+
+            GameManager.Instance.Translate(playerId, -1);
         }
     }
 

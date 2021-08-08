@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using MLAPI;
 
-public class TetrisBlock : MonoBehaviour
+public class TetrisBlock : NetworkBehaviour
 {
     public Vector3 rotationPoint;
     public ArenaManager arenaManager;
@@ -9,6 +10,9 @@ public class TetrisBlock : MonoBehaviour
 
     private void Update()
     {
+        if (!IsServer)
+            return;
+
         if (Time.time - previousTime > arenaManager.fallTime)
         {
             if (arenaManager.DropTetromino(transform) == false)

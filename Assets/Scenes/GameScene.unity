@@ -483,6 +483,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1025691919}
   - component: {fileID: 1025691918}
+  - component: {fileID: 1025691920}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -535,6 +536,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1025691920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025691917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkInstanceId: 0
+  PrefabHash: 11329289427721026110
+  PrefabHashGenerator: AudioManager
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
 --- !u!4 &1034575247 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2393732434777571415, guid: 66774a8d5ed32ca4793a9cc53315bd3f,
@@ -609,6 +627,32 @@ MonoBehaviour:
     - Prefab: {fileID: 2839499134144156631, guid: a54b72e2956fac743b2dfcceee97b52e,
         type: 3}
       PlayerPrefab: 1
+    - Prefab: {fileID: 3041324692745366628, guid: d21279ae58537294ea6c2bb7a8acd889,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 2816153697676127765, guid: 6ad0fa2a608f63a4f8109f6ed0e350a5,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 216893815099449496, guid: da5a51254f93cd6428bb521aab1d280b,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 2439425456930885094, guid: da02012cf5376f148a424795d83001bb,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 5765127134494830580, guid: 6a1795b58a2ff184b803a5cb7ca27879,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 5932751063624237951, guid: def08756eda28e3409411e120ac38ae7,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 7305214878493039930, guid: 45f6db373166dde469bbcfd4789b30ff,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 4324349307368231923, guid: c444475a8a7730d4182fb7899273f9ba,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 1521736858}
+      PlayerPrefab: 0
     PlayerPrefabHash:
       id: 0
     CreatePlayerPrefab: 1
@@ -663,6 +707,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1521736860}
   - component: {fileID: 1521736859}
+  - component: {fileID: 1521736861}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -684,6 +729,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arenaPrefab: {fileID: 6171653167211395274, guid: d21279ae58537294ea6c2bb7a8acd889,
     type: 3}
+  firstArena: {fileID: 0}
+  secondArena: {fileID: 0}
 --- !u!4 &1521736860
 Transform:
   m_ObjectHideFlags: 0
@@ -698,6 +745,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1521736861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521736858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkInstanceId: 0
+  PrefabHash: 13494567273885427380
+  PrefabHashGenerator: GameManager
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
 --- !u!1 &1839985808
 GameObject:
   m_ObjectHideFlags: 0
