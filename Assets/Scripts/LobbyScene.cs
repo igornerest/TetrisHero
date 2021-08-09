@@ -4,7 +4,7 @@ using TMPro;
 using System.Text;
 using MLAPI.SceneManagement;
 
-public class LobbyScene : NetworkSingleton<LobbyScene>
+public class LobbyScene : NetworkBehaviour
 {
     [SerializeField] private TMP_InputField passwordInputField;
     [SerializeField] private GameObject passwordEntryUI;
