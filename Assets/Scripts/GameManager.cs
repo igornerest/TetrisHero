@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MLAPI;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -41,7 +42,8 @@ public class GameManager : MonoBehaviour
     }
 
     private void Update()
-    {
+    {                
+
         if (Input.GetKey(KeyCode.Escape))
         {
 #if UNITY_EDITOR
@@ -77,23 +79,24 @@ public class GameManager : MonoBehaviour
     public void SetArenas()
     {
         this.firstArena = Instantiate(arenaPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        //this.firstArena.GetComponent<NetworkObject>().Spawn();
         this.firstArena.name = "FirstArena";
+        this.firstArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = true;
 
         this.secondArena = Instantiate(arenaPrefab, new Vector3(0, 0, 20 ), Quaternion.identity);
+        //this.secondArena.GetComponent<NetworkObject>().Spawn();
         this.secondArena.name = "SecondArena";
-        
+        this.secondArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = true;
 
         this.firstPlayer = new GameObject("FirstPlayer").AddComponent<PlayerController>();
         this.firstPlayer.playerArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.enemyArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.firstPlayer.playerId = 1;
-        this.firstPlayer.playerArenaManager.isStandardOrientation = true;
 
         this.secondPlayer = new GameObject("SecondPlayer").AddComponent<PlayerController>();
         this.secondPlayer.playerArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.enemyArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
         this.secondPlayer.playerId = 2;
-        this.secondPlayer.playerArenaManager.isStandardOrientation = false;
 
         //this.secondArena.transform.rotation = new Quaternion(0, 180, 0, 1);
 
