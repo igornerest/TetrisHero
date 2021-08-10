@@ -8,6 +8,9 @@ public class GameManager : NetworkBehaviour
 {
     public Transform arenaPrefab;
 
+    public Vector3 firstArenaPosition = new Vector3(0, 0, 3);
+    public Vector3 secondArenaPosition = new Vector3(0, 0, -17);
+
     private Transform firstArena;
     private Transform secondArena;
     private Transform currentArena;
@@ -98,17 +101,17 @@ public class GameManager : NetworkBehaviour
 #endif
         }
 
-        if (!IsServer)
-            return;
-
-        if (this.isGameOn.Value == false)
+        if (IsServer)
         {
-            SetArenas();
-        }
-        else
-        {
-            HandleAudioSynchedSpawn();
-            HandleArenaTranslations();
+            if (this.isGameOn.Value == false)
+            {
+                SetArenas();
+            }
+            else
+            {
+                HandleAudioSynchedSpawn();
+                HandleArenaTranslations();
+            }
         }
     }
 
@@ -123,12 +126,12 @@ public class GameManager : NetworkBehaviour
         NetworkManager.Singleton.ConnectedClientsList[0].PlayerObject.GetComponent<PlayerController>().SetPlayerId(PLAYER1_ID);
         NetworkManager.Singleton.ConnectedClientsList[1].PlayerObject.GetComponent<PlayerController>().SetPlayerId(PLAYER2_ID);
 
-        this.firstArena = Instantiate(arenaPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        this.firstArena = Instantiate(arenaPrefab, firstArenaPosition, Quaternion.identity);
         this.firstArena.GetComponent<NetworkObject>().Spawn();
         this.firstArena.name = "FirstArena";
-        this.firstArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = true;
+        this.firstArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = false;
 
-        this.secondArena = Instantiate(arenaPrefab, new Vector3(0, 0, 20), Quaternion.identity);
+        this.secondArena = Instantiate(arenaPrefab, secondArenaPosition, Quaternion.identity);
         this.secondArena.GetComponent<NetworkObject>().Spawn();
         this.secondArena.name = "SecondArena";
         this.secondArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = true;
@@ -160,6 +163,18 @@ public class GameManager : NetworkBehaviour
         {
             secondArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(secondArenaGridTranslation.Value);
             secondArenaGridTranslation.Value = 0;
+        }
+
+        if (firstArenaSpawnTranslation.Value != 0)
+        {
+            firstArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateSpawnPosition(firstArenaSpawnTranslation.Value);
+            firstArenaSpawnTranslation.Value = 0;
+        }
+
+        if (secondArenaSpawnTranslation.Value != 0)
+        {
+            secondArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateSpawnPosition(secondArenaSpawnTranslation.Value);
+            secondArenaSpawnTranslation.Value = 0;
         }
     }
 
