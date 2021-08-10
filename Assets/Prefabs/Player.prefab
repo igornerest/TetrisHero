@@ -44,9 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd3a783f32d6c5a428779e25fcb4a0a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerArenaManager: {fileID: 0}
-  enemyArenaManager: {fileID: 0}
-  playerId: 0
 --- !u!114 &-3259262616687871229
 MonoBehaviour:
   m_ObjectHideFlags: 0

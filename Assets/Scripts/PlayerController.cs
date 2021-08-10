@@ -1,25 +1,55 @@
 ﻿using UnityEngine;
+using MLAPI;
+using MLAPI.NetworkVariable;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
-    public ArenaManager playerArenaManager;
-    public ArenaManager enemyArenaManager;
-    public int playerId;
+    private static NetworkVariableSettings fullWritePermission = new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone };
+
+    private NetworkVariableInt playerId = new NetworkVariableInt(fullWritePermission, 0);
+    private NetworkVariableBool isPlayable = new NetworkVariableBool(fullWritePermission, false);
 
     private void Update()
     {
-        KeyCode leftMovvement = playerId == 1 ? KeyCode.LeftArrow : KeyCode.A;
-        KeyCode rightMovement = playerId == 1 ? KeyCode.RightArrow : KeyCode.D;
+        if (!isPlayable.Value)
+            return;
 
-        if (Input.GetKeyDown(leftMovvement))
+        if (!GameManager.Instance.IsGameOn)
+            return;
+
+        if (IsOwner)
         {
-            playerArenaManager.TranslateGrid(-1);
-            enemyArenaManager.TranslateSpawnPosition(-1);
+            Debug.Log("IsOwner");
+            MoveGrid();
         }
-        if (Input.GetKeyDown(rightMovement))
+    }
+
+    public void SetPlayable()
+    {
+        isPlayable.Value = true;
+    }
+
+    public void SetPlayerId(int playerId)
+    {
+        this.playerId.Value = playerId;
+    }
+
+    private void MoveGrid()
+    {
+        KeyCode leftMovementKey = KeyCode.LeftArrow;
+        KeyCode rightMovementKey = KeyCode.RightArrow;
+
+        if (Input.GetKeyDown(leftMovementKey))
         {
-            playerArenaManager.TranslateGrid(+1);
-            enemyArenaManager.TranslateSpawnPosition(+1);
+            Debug.Log("Moving Left");
+            GameManager.Instance.RequestOwnTranslation(playerId.Value, -1);
+            GameManager.Instance.RequestEnemyTranslation(playerId.Value, -1);
+        }
+        if (Input.GetKeyDown(rightMovementKey))
+        {
+            Debug.Log("Moving Right");
+            GameManager.Instance.RequestOwnTranslation(playerId.Value, +1);
+            GameManager.Instance.RequestEnemyTranslation(playerId.Value, +1);
         }
     }
 

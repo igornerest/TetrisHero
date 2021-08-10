@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
+using MLAPI;
 
 public class ArenaManager : MonoBehaviour
 {
@@ -125,7 +125,7 @@ public class ArenaManager : MonoBehaviour
     public void TranslateGrid(int direction)
     {
         ShiftFallingConflictingTetrominoes(direction);
-
+ 
         for (int row = 0; row < height; row++)
         {
             int col = direction > 0 ? 0 : width - 1;
@@ -156,8 +156,8 @@ public class ArenaManager : MonoBehaviour
             foreach (Transform block in tetromino)
             {
                 Vector3 blockLocalPosition = tetromino.GetComponent<TetrisBlock>().GetBlockLocalPosition(block);
-                int roundedX = direction >= 0 
-                    ? (Mathf.FloorToInt(blockLocalPosition.x) - direction + width) % width 
+                int roundedX = direction >= 0
+                    ? (Mathf.FloorToInt(blockLocalPosition.x) - direction + width) % width
                     : (Mathf.CeilToInt(blockLocalPosition.x) - direction + width) % width;
                 int roundedY = GetRoundedY(blockLocalPosition.z);
 
@@ -175,6 +175,7 @@ public class ArenaManager : MonoBehaviour
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
         GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, this.transform.parent.rotation, transform);
+        tetromino.GetComponent<NetworkObject>().Spawn();
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
         return tetromino;
     }

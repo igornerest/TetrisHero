@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using MLAPI;
 using MLAPI.NetworkVariable;
-using MLAPI.Messaging;
 using System;
+using MLAPI.Connection;
 
 public class GameManager : NetworkBehaviour
 {
@@ -11,10 +10,10 @@ public class GameManager : NetworkBehaviour
 
     private Transform firstArena;
     private Transform secondArena;
-    private PlayerController firstPlayer;
-    private PlayerController secondPlayer;
-
     private Transform currentArena;
+
+    private static int PLAYER1_ID = 1;
+    private static int PLAYER2_ID = 2;
 
     private static GameManager instance = null;
 
@@ -45,16 +44,29 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void RequestTranslation(int playerId, int direction)
+    public void RequestOwnTranslation(int playerId, int direction)
     {
-        if (playerId == firstPlayer.playerId)
+        if (playerId == PLAYER1_ID)
         {
             firstArenaGridTranslation.Value = direction;
         }
 
-        if (playerId == secondPlayer.playerId)
+        if (playerId == PLAYER2_ID)
         {
             secondArenaGridTranslation.Value = direction;
+        }
+    }
+
+    public void RequestEnemyTranslation(int playerId, int direction)
+    {
+        if (playerId == PLAYER1_ID)
+        {
+            secondArenaSpawnTranslation.Value = direction;
+        }
+
+        if (playerId == PLAYER2_ID)
+        {
+            firstArenaSpawnTranslation.Value = direction;
         }
     }
 
@@ -67,11 +79,16 @@ public class GameManager : NetworkBehaviour
         }
 
         instance = this;
-        DontDestroyOnLoad(this);
+        foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            client.PlayerObject.GetComponent<PlayerController>().SetPlayable();
+        }
+
+        //DontDestroyOnLoad(this);
     }
 
     private void Update()
-    {                
+    {
         if (Input.GetKey(KeyCode.Escape))
         {
 #if UNITY_EDITOR
@@ -90,8 +107,8 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
-            //HandleAudioSynchedSpawn();
-            //HandleArenaTranslations();
+            HandleAudioSynchedSpawn();
+            HandleArenaTranslations();
         }
     }
 
@@ -100,21 +117,18 @@ public class GameManager : NetworkBehaviour
         PlayerController[] pcs = FindObjectsOfType<PlayerController>();
 
         Debug.Log(pcs.Length);
-        if (pcs.Length < 2)
+        if (NetworkManager.Singleton.ConnectedClients.Count < 2)
             throw new Exception("Unsuficient players");
 
-        pcs[0].playerId = 1;
-        pcs[0].name = "FirstPlayer";
-
-        pcs[1].playerId = 2;
-        pcs[1].name = "SecondPlayer";
+        NetworkManager.Singleton.ConnectedClientsList[0].PlayerObject.GetComponent<PlayerController>().SetPlayerId(PLAYER1_ID);
+        NetworkManager.Singleton.ConnectedClientsList[1].PlayerObject.GetComponent<PlayerController>().SetPlayerId(PLAYER2_ID);
 
         this.firstArena = Instantiate(arenaPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         this.firstArena.GetComponent<NetworkObject>().Spawn();
         this.firstArena.name = "FirstArena";
         this.firstArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = true;
 
-        this.secondArena = Instantiate(arenaPrefab, new Vector3(0, 0, 20 ), Quaternion.identity);
+        this.secondArena = Instantiate(arenaPrefab, new Vector3(0, 0, 20), Quaternion.identity);
         this.secondArena.GetComponent<NetworkObject>().Spawn();
         this.secondArena.name = "SecondArena";
         this.secondArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = true;
@@ -136,11 +150,17 @@ public class GameManager : NetworkBehaviour
 
     private void HandleArenaTranslations()
     {
-        firstArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(firstArenaGridTranslation.Value);
-        firstArenaGridTranslation.Value = 0;
+        if (firstArenaGridTranslation.Value != 0)
+        {
+            firstArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(firstArenaGridTranslation.Value);
+            firstArenaGridTranslation.Value = 0;
+        }
 
-        secondArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(secondArenaGridTranslation.Value);
-        secondArenaGridTranslation.Value = 0;
+        if (secondArenaGridTranslation.Value != 0)
+        {
+            secondArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(secondArenaGridTranslation.Value);
+            secondArenaGridTranslation.Value = 0;
+        }
     }
 
     private void CheckEndgameConditions()

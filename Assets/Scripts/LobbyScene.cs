@@ -3,6 +3,7 @@ using MLAPI;
 using TMPro;
 using System.Text;
 using MLAPI.SceneManagement;
+using MLAPI.Connection;
 
 public class LobbyScene : NetworkBehaviour
 {
@@ -19,6 +20,9 @@ public class LobbyScene : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsServer)
+            return;
+
         if (NetworkManager.Singleton.ConnectedClients.Count == 2)
         {
             NetworkSceneManager.SwitchScene("GameScene");
