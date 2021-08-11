@@ -196,6 +196,7 @@ public class ArenaManager : MonoBehaviour
             {
                 uncapableOfSpawn = true;
             }
+            block.GetComponent<Animator>().SetBool("AddToGrid", true);
             block.GetComponent<MeshRenderer>().material = plaaformMaterial;
         }
     }
