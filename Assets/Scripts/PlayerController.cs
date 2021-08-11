@@ -8,41 +8,74 @@ public class PlayerController : NetworkBehaviour
     public Vector3 camera2Position = new Vector3(4.5f, 10f, -28f);
     public Vector3 centerPosition = new Vector3(4.5f, 0, 0);
 
+    private const string IS_PLAYABLE = "IS_PLAYABLE";
+    private const string IS_GAMEOVER = "IS_GAMEOVER";
+    private const string NONE = "NONE";
+
     private static NetworkVariableSettings fullWritePermission = new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone };
 
     private NetworkVariableInt playerId = new NetworkVariableInt(fullWritePermission, 0);
-    private NetworkVariableBool isPlayable = new NetworkVariableBool(fullWritePermission, false);
+    private NetworkVariableString playerState = new NetworkVariableString(fullWritePermission, NONE);
+    private NetworkVariableBool hasWon = new NetworkVariableBool(fullWritePermission, false);
 
     private bool setCamera = false;
 
     private void Update()
     {
-        if (!isPlayable.Value)
+        if (!IsOwner)
             return;
 
-        if (!GameManager.Instance.IsGameOn)
-            return;
-
-        if (IsOwner)
+        switch (playerState.Value)
         {
-            if (!setCamera)
-            {
-                SetCamera();
-            }
+            case IS_PLAYABLE:
+                if (!GameManager.Instance.IsGameOn)
+                    return;
 
-            MoveGrid();
+                if (!setCamera)
+                {
+                    SetCamera();
+                }
+                MoveGrid();
+                
+                break;
+
+            case IS_GAMEOVER:
+                UpdateResultText();
+                playerState.Value = NONE;
+                return;
+
         }
     }
 
-    // SetPlayable() and SetPlayerId are methods called from the server side
+    // SetPlayable(), SetGameOver() and SetPlayerId are methods called from the server side
     public void SetPlayable()
     {
-        isPlayable.Value = true;
+        playerState.Value = IS_PLAYABLE;
+    }
+
+    public void SetGameOver(bool hasWon)
+    {
+        playerState.Value = IS_GAMEOVER;
+        this.hasWon.Value = hasWon;
     }
 
     public void SetPlayerId(int playerId)
     {
         this.playerId.Value = playerId;
+    }
+
+    private void UpdateResultText()
+    {
+        GameOverScene gmScene = GameObject.Find("GameOverScene").GetComponent<GameOverScene>();
+        
+        if (hasWon.Value)
+        {
+            gmScene.SetWinText();
+        }
+        else
+        {
+            gmScene.SetLoseText();
+        }
     }
 
     private void SetCamera()

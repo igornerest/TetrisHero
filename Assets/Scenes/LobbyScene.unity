@@ -185,6 +185,7 @@ MonoBehaviour:
     RegisteredScenes:
     - LobbyScene
     - GameScene
+    - GameOver
     AllowRuntimeSceneChanges: 0
     NetworkPrefabs:
     - Prefab: {fileID: 1298961954228261872, guid: af652d8a147547e44bd3aac2dc4b8053,

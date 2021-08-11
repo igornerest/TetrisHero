@@ -6,8 +6,6 @@ public class AudioManager : MonoBehaviour
 
     private static AudioManager instance;
 
-    // Start is called before the first frame update
-
     public static AudioManager Instance
     {
         get
@@ -29,7 +27,7 @@ public class AudioManager : MonoBehaviour
         }
 
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
         foreach (Sound sound in sounds)
         {

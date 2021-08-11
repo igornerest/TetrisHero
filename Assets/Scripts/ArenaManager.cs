@@ -175,7 +175,7 @@ public class ArenaManager : MonoBehaviour
     {
         int randomIndex = Random.Range(0, Tetrominoes.Length);
         GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, this.transform.parent.rotation, transform);
-        tetromino.GetComponent<NetworkObject>().Spawn();
+        tetromino.GetComponent<NetworkObject>().Spawn(null, true);
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
         return tetromino;
     }

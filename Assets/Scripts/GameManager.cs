@@ -3,6 +3,7 @@ using MLAPI;
 using MLAPI.NetworkVariable;
 using System;
 using MLAPI.Connection;
+using MLAPI.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
@@ -11,9 +12,9 @@ public class GameManager : NetworkBehaviour
     public Vector3 firstArenaPosition = new Vector3(0, 0, 3);
     public Vector3 secondArenaPosition = new Vector3(0, 0, -17);
 
-    private Transform firstArena;
-    private Transform secondArena;
-    private Transform currentArena;
+    private ArenaManager firstArenaManager;
+    private ArenaManager secondArenaManager;
+    private ArenaManager currentArenaManager;
 
     private static int PLAYER1_ID = 1;
     private static int PLAYER2_ID = 2;
@@ -111,6 +112,7 @@ public class GameManager : NetworkBehaviour
             {
                 HandleAudioSynchedSpawn();
                 HandleArenaTranslations();
+                CheckEndgameConditions();
             }
         }
     }
@@ -126,17 +128,19 @@ public class GameManager : NetworkBehaviour
         NetworkManager.Singleton.ConnectedClientsList[0].PlayerObject.GetComponent<PlayerController>().SetPlayerId(PLAYER1_ID);
         NetworkManager.Singleton.ConnectedClientsList[1].PlayerObject.GetComponent<PlayerController>().SetPlayerId(PLAYER2_ID);
 
-        this.firstArena = Instantiate(arenaPrefab, firstArenaPosition, Quaternion.identity);
-        this.firstArena.GetComponent<NetworkObject>().Spawn();
-        this.firstArena.name = "FirstArena";
-        this.firstArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = false;
+        Transform firstArena = Instantiate(arenaPrefab, firstArenaPosition, Quaternion.identity);
+        firstArena.GetComponent<NetworkObject>().Spawn(null, true);
+        firstArena.name = "FirstArena";
+        firstArenaManager = firstArena.Find("ArenaManager").GetComponent<ArenaManager>();
+        firstArenaManager.isStandardOrientation = false;
 
-        this.secondArena = Instantiate(arenaPrefab, secondArenaPosition, Quaternion.identity);
-        this.secondArena.GetComponent<NetworkObject>().Spawn();
-        this.secondArena.name = "SecondArena";
-        this.secondArena.Find("ArenaManager").GetComponent<ArenaManager>().isStandardOrientation = true;
+        Transform secondArena = Instantiate(arenaPrefab, secondArenaPosition, Quaternion.identity);
+        secondArena.GetComponent<NetworkObject>().Spawn(null, true);
+        secondArena.name = "SecondArena";
+        secondArenaManager = secondArena.Find("ArenaManager").GetComponent<ArenaManager>();
+        secondArenaManager.isStandardOrientation = true;
 
-        this.currentArena = firstArena;
+        this.currentArenaManager = firstArenaManager;
         this.isGameOn.Value = true;
     }
 
@@ -145,9 +149,9 @@ public class GameManager : NetworkBehaviour
         if (AudioManager.Instance.Play())
         {
             float momentHighPointCycle = AudioManager.Instance.GetMomentHighPointCycle();
-            currentArena.Find("ArenaManager").GetComponent<ArenaManager>().ScheduleTetrominoFall(momentHighPointCycle);
+            currentArenaManager.ScheduleTetrominoFall(momentHighPointCycle);
 
-            currentArena = currentArena == firstArena ? secondArena : firstArena;
+            currentArenaManager = (currentArenaManager == firstArenaManager) ? secondArenaManager : firstArenaManager;
         }
     }
 
@@ -155,41 +159,40 @@ public class GameManager : NetworkBehaviour
     {
         if (firstArenaGridTranslation.Value != 0)
         {
-            firstArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(firstArenaGridTranslation.Value);
+            firstArenaManager.TranslateGrid(firstArenaGridTranslation.Value);
             firstArenaGridTranslation.Value = 0;
         }
 
         if (secondArenaGridTranslation.Value != 0)
         {
-            secondArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateGrid(secondArenaGridTranslation.Value);
+            secondArenaManager.TranslateGrid(secondArenaGridTranslation.Value);
             secondArenaGridTranslation.Value = 0;
         }
 
         if (firstArenaSpawnTranslation.Value != 0)
         {
-            firstArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateSpawnPosition(firstArenaSpawnTranslation.Value);
+            firstArenaManager.TranslateSpawnPosition(firstArenaSpawnTranslation.Value);
             firstArenaSpawnTranslation.Value = 0;
         }
 
         if (secondArenaSpawnTranslation.Value != 0)
         {
-            secondArena.Find("ArenaManager").GetComponent<ArenaManager>().TranslateSpawnPosition(secondArenaSpawnTranslation.Value);
+            secondArenaManager.TranslateSpawnPosition(secondArenaSpawnTranslation.Value);
             secondArenaSpawnTranslation.Value = 0;
         }
     }
 
     private void CheckEndgameConditions()
     {
-        /*
-        if (!firstPlayer.playerArenaManager.IsPossibleToSpawn() && SceneManager.GetActiveScene().name != "GameOver")
+        bool firstPlayerLost = !firstArenaManager.IsPossibleToSpawn();
+        bool secondPlayerLost = !secondArenaManager.IsPossibleToSpawn();
+
+        if (firstPlayerLost || secondPlayerLost)
         {
-            isGameSet = false;
-            SceneManager.LoadScene("GameOver");
+            NetworkManager.Singleton.ConnectedClientsList[0].PlayerObject.GetComponent<PlayerController>().SetGameOver(!firstPlayerLost);
+            NetworkManager.Singleton.ConnectedClientsList[1].PlayerObject.GetComponent<PlayerController>().SetGameOver(!secondPlayerLost);
+     
+            NetworkSceneManager.SwitchScene("GameOver");
         }
-        if (!secondPlayer.playerArenaManager.IsPossibleToSpawn() && SceneManager.GetActiveScene().name != "GameOver")
-        {
-            isGameSet = false;
-            SceneManager.LoadScene("GameOver");
-        }*/
     }
 }
