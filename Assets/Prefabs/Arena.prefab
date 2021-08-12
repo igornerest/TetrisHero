@@ -144,6 +144,10 @@ MonoBehaviour:
   - {fileID: 5932751063624237951, guid: def08756eda28e3409411e120ac38ae7, type: 3}
   - {fileID: 7305214878493039930, guid: 45f6db373166dde469bbcfd4789b30ff, type: 3}
   - {fileID: 4324349307368231923, guid: c444475a8a7730d4182fb7899273f9ba, type: 3}
+  - {fileID: 216893815099449496, guid: 452dbad90be6af74980b3039ec4b3a4d, type: 3}
+  - {fileID: 2439425456930885094, guid: cc300a59e6ca2d4489b90480e560366b, type: 3}
+  - {fileID: 5765127134494830580, guid: b0faf505693a2a24bb75634b8e81b354, type: 3}
+  - {fileID: 7305214878493039930, guid: 98aeee4a408f54b4782c91778af6ed1d, type: 3}
   spawnPosition: {x: 5, y: 0, z: 12}
   plaaformMaterial: {fileID: 2100000, guid: 6c8181482a9ecb04f98c8498d5c84f53, type: 2}
   fallTime: 0.5
