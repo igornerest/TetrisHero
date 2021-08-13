@@ -11,6 +11,16 @@ public class LobbyScene : NetworkBehaviour
     [SerializeField] private GameObject passwordEntryUI;
     [SerializeField] private GameObject leaveButton;
 
+    private bool shouldRestartLobby = false;
+
+    private void Awake()
+    {
+        if (NetworkManager.Singleton.ConnectedClients.Count > 0)
+        {
+            shouldRestartLobby = true;
+        }    
+    }
+    
     private void Start()
     {
         NetworkManager.Singleton.OnServerStarted += HandleServerStarted;
@@ -20,6 +30,12 @@ public class LobbyScene : NetworkBehaviour
 
     private void Update()
     {
+        if (shouldRestartLobby)
+        {
+            shouldRestartLobby = DisconnectLocalClient();
+            return;
+        }
+
         if (!IsServer)
             return;
 
@@ -27,6 +43,29 @@ public class LobbyScene : NetworkBehaviour
         {
             NetworkSceneManager.SwitchScene("GameScene");
         }
+    }
+
+    private bool DisconnectLocalClient()
+    {
+        bool canDisconnectAllClients = true;
+        foreach (NetworkClient nc in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            canDisconnectAllClients &= nc.PlayerObject.GetComponent<PlayerController>().CanDisconnectedFromServer();
+        }
+
+        if (NetworkManager.Singleton.IsClient && canDisconnectAllClients)
+        {
+            NetworkManager.Singleton.StopClient();
+            return false;
+        }
+
+        if (NetworkManager.Singleton.IsHost && canDisconnectAllClients)
+        {
+            NetworkManager.Singleton.StopHost();
+            return false;
+        }
+
+        return true;
     }
 
     private void OnDestroy()

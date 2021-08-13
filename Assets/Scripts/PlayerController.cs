@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using MLAPI;
 using MLAPI.NetworkVariable;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -17,6 +18,7 @@ public class PlayerController : NetworkBehaviour
     private NetworkVariableInt playerId = new NetworkVariableInt(fullWritePermission, 0);
     private NetworkVariableString playerState = new NetworkVariableString(fullWritePermission, NONE);
     private NetworkVariableBool hasWon = new NetworkVariableBool(fullWritePermission, false);
+    private NetworkVariableBool canDisconnect = new NetworkVariableBool(fullWritePermission, false);
 
     private bool setCamera = false;
 
@@ -24,6 +26,8 @@ public class PlayerController : NetworkBehaviour
     {
         if (!IsOwner)
             return;
+
+        canDisconnect.Value = SceneManager.GetActiveScene().name == "LobbyScene";
 
         switch (playerState.Value)
         {
@@ -41,13 +45,11 @@ public class PlayerController : NetworkBehaviour
 
             case IS_GAMEOVER:
                 UpdateResultText();
-                playerState.Value = NONE;
                 return;
-
         }
     }
 
-    // SetPlayable(), SetGameOver() and SetPlayerId are methods called from the server side
+    // The following Set methods are called from on the server side
     public void SetPlayable()
     {
         playerState.Value = IS_PLAYABLE;
@@ -64,17 +66,28 @@ public class PlayerController : NetworkBehaviour
         this.playerId.Value = playerId;
     }
 
+    public bool CanDisconnectedFromServer()
+    {
+        return canDisconnect.Value;
+    }
+
     private void UpdateResultText()
     {
-        GameOverScene gmScene = GameObject.Find("GameOverScene").GetComponent<GameOverScene>();
-        
-        if (hasWon.Value)
+        GameObject gameOverScene = GameObject.Find("GameOverScene");
+
+        if (gameOverScene)
         {
-            gmScene.SetWinText();
-        }
-        else
-        {
-            gmScene.SetLoseText();
+            GameOverScene gameoverScript = gameOverScene.GetComponent<GameOverScene>();
+            if (hasWon.Value)
+            {
+                gameoverScript.SetWinText();
+            }
+            else
+            {
+                gameoverScript.SetLoseText();
+            }
+
+            playerState.Value = NONE;
         }
     }
 
