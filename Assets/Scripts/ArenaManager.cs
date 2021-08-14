@@ -61,7 +61,7 @@ public class ArenaManager : MonoBehaviour
             hasTetrominoFallScheduled = true;
             previousTime = Time.time;
         }
-
+    
         nextTetromino = CreateNewTetromino().transform;
         this.nextTetrominoTime = nextTetrominoTime;
     }
@@ -87,16 +87,11 @@ public class ArenaManager : MonoBehaviour
             int roundedY = GetRoundedY(blockLocalPosition.z + downHeight);
 
             bool isPossibleToAddOnGrid = addTetrominoInGridWhenItsDown ? roundedY < limitDownCubes : roundedY >= limitDownCubes;
-            Debug.Log(isPossibleToAddOnGrid || grid[roundedX, roundedY] != null);
             if (isPossibleToAddOnGrid || grid[roundedX, roundedY] != null)
             {
                 if (fallingPieces.Contains(tetromino)){ 
                     AddToGrid(tetromino);
                     fallingPieces.Remove(tetromino);
-                }
-                else
-                {
-                    Debug.Log("AAA");
                 }
                 return false;
             }
@@ -179,7 +174,7 @@ public class ArenaManager : MonoBehaviour
 
     private GameObject CreateNewTetromino()
     {
-        int randomIndex = 3;// Random.Range(0, Tetrominoes.Length);
+        int randomIndex = Random.Range(0, Tetrominoes.Length);
         GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, this.transform.parent.rotation, transform);
         tetromino.GetComponent<NetworkObject>().Spawn(null, true);
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
@@ -203,7 +198,6 @@ public class ArenaManager : MonoBehaviour
                 uncapableOfSpawn = true;
             }
             block.GetComponent<Animator>().SetBool("AddToGrid", true);
-            block.GetComponent<MeshRenderer>().material = plaaformMaterial;
         }
     }
 
@@ -235,7 +229,7 @@ public class ArenaManager : MonoBehaviour
                     DeleteRow(row);
                     offset--;
                 }
-                else if (offset < 0)
+                    else if (offset < 0)
                 {
                     FixRowPosition(row, offset);
                 }
