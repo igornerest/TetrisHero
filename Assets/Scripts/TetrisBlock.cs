@@ -19,7 +19,9 @@ public class TetrisBlock : MonoBehaviour
         if (isReadyToFall)
         {
             if (arenaManager.DropTetromino(transform, Time.smoothDeltaTime * tetrominoFallTimeScale) == false)
-                this.enabled = false;
+            {
+                //this.enabled = false;
+            }
         }
     }
 

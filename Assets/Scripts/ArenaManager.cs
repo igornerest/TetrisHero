@@ -87,11 +87,17 @@ public class ArenaManager : MonoBehaviour
             int roundedY = GetRoundedY(blockLocalPosition.z + downHeight);
 
             bool isPossibleToAddOnGrid = addTetrominoInGridWhenItsDown ? roundedY < limitDownCubes : roundedY >= limitDownCubes;
-
+            Debug.Log(isPossibleToAddOnGrid || grid[roundedX, roundedY] != null);
             if (isPossibleToAddOnGrid || grid[roundedX, roundedY] != null)
             {
-                AddToGrid(tetromino);
-                fallingPieces.Remove(tetromino);
+                if (fallingPieces.Contains(tetromino)){ 
+                    AddToGrid(tetromino);
+                    fallingPieces.Remove(tetromino);
+                }
+                else
+                {
+                    Debug.Log("AAA");
+                }
                 return false;
             }
         }
@@ -173,7 +179,7 @@ public class ArenaManager : MonoBehaviour
 
     private GameObject CreateNewTetromino()
     {
-        int randomIndex = Random.Range(0, Tetrominoes.Length);
+        int randomIndex = 3;// Random.Range(0, Tetrominoes.Length);
         GameObject tetromino = Instantiate(Tetrominoes[randomIndex], transform.position + spawnPosition, this.transform.parent.rotation, transform);
         tetromino.GetComponent<NetworkObject>().Spawn(null, true);
         tetromino.GetComponent<TetrisBlock>().arenaManager = this;
@@ -205,16 +211,34 @@ public class ArenaManager : MonoBehaviour
     {
         int offset = 0;
 
-        for (int row = 0; row < height; row++)
+        if (isStandardOrientation)
         {
-            if (HasLine(row))
+            for (int row = 0; row < height; row++)
             {
-                DeleteRow(row);
-                offset++;
+                if (HasLine(row))
+                {
+                    DeleteRow(row);
+                    offset++;
+                }
+                else if (offset > 0)
+                {
+                    FixRowPosition(row, offset);
+                }
             }
-            else if (offset > 0)
+        }
+        else
+        {
+            for (int row = height-1; row >= 0; row--)
             {
-                FixRowPosition(row, offset);
+                if (HasLine(row))
+                {
+                    DeleteRow(row);
+                    offset--;
+                }
+                else if (offset < 0)
+                {
+                    FixRowPosition(row, offset);
+                }
             }
         }
     }
@@ -222,7 +246,7 @@ public class ArenaManager : MonoBehaviour
     private bool HasLine(int row)
     {
         for (int col = 0; col < width; col++)
-        {
+        {   
             if (grid[col, row] == null)
             {
                 return false;
