@@ -2,7 +2,7 @@
 
 public class AudioManager : MonoBehaviour
 {
-    public Sound[] sounds;
+    [SerializeField] private Sound[] sounds;
 
     private static AudioManager instance;
 

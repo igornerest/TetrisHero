@@ -5,8 +5,8 @@ using MLAPI;
 
 public class GameOverScene : NetworkBehaviour
 {
-    public TMP_Text resultMessage;
-    public TMP_Text returnMessage;
+    [SerializeField] private TMP_Text resultMessage;
+    [SerializeField] private TMP_Text returnMessage;
 
     private bool hasRequestedSceneSwitch = false;
 

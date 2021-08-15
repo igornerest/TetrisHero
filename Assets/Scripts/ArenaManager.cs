@@ -4,24 +4,23 @@ using MLAPI;
 
 public class ArenaManager : MonoBehaviour
 {
-    public static int height = 15;
-    public static int width = 10;
-
-    public GameObject[] Tetrominoes;
-    public Vector3 spawnPosition;
-    public Material plaaformMaterial;
+    [SerializeField] private GameObject[] Tetrominoes;
+    [SerializeField] private Vector3 spawnPosition;
 
     public float fallTime = 0.5f;
-
     public bool isStandardOrientation;
+
+    private static int height = 15;
+    private static int width = 10;
 
     private Transform[,] grid = new Transform[width, height];
     private HashSet<Transform> fallingPieces = new HashSet<Transform>();
 
-    private float previousTime = 0;
-    private float nextTetrominoTime = 0;
     private Transform nextTetromino;
+    private float nextTetrominoTime = 0;
     private bool hasTetrominoFallScheduled = false;
+
+    private float previousTime = 0;
 
     private bool uncapableOfSpawn = false;
 

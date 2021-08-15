@@ -7,10 +7,9 @@ using MLAPI.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
-    public Transform arenaPrefab;
-
-    public Vector3 firstArenaPosition = new Vector3(0, 0, 3);
-    public Vector3 secondArenaPosition = new Vector3(0, 0, -17);
+    [SerializeField] private Transform arenaPrefab;
+    [SerializeField] private Vector3 firstArenaPosition = new Vector3(0, 0, 3);
+    [SerializeField] private Vector3 secondArenaPosition = new Vector3(0, 0, -17);
 
     private ArenaManager firstArenaManager;
     private ArenaManager secondArenaManager;

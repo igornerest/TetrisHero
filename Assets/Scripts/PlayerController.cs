@@ -5,9 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : NetworkBehaviour
 {
-    public Vector3 camera1Position = new Vector3(4.5f, 10f, 28f);
-    public Vector3 camera2Position = new Vector3(4.5f, 10f, -28f);
-    public Vector3 centerPosition = new Vector3(4.5f, 0, 0);
+    [SerializeField] private Vector3 camera1Position = new Vector3(4.5f, 10f, 28f);
+    [SerializeField] private Vector3 camera2Position = new Vector3(4.5f, 10f, -28f);
+    [SerializeField] private Vector3 centerPosition = new Vector3(4.5f, 0, 0);
 
     private const string IS_PLAYABLE = "IS_PLAYABLE";
     private const string IS_GAMEOVER = "IS_GAMEOVER";

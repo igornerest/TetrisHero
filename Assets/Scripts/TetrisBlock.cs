@@ -2,7 +2,8 @@
 
 public class TetrisBlock : MonoBehaviour
 {
-    public Vector3 rotationPoint;
+    [SerializeField] private Vector3 rotationPoint;
+
     public ArenaManager arenaManager;
 
     private bool isReadyToFall = false;

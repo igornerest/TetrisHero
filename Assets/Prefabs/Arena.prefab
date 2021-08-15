@@ -149,7 +149,7 @@ MonoBehaviour:
   - {fileID: 5765127134494830580, guid: b0faf505693a2a24bb75634b8e81b354, type: 3}
   - {fileID: 7305214878493039930, guid: 98aeee4a408f54b4782c91778af6ed1d, type: 3}
   spawnPosition: {x: 5, y: 0, z: 12}
-  plaaformMaterial: {fileID: 2100000, guid: 6c8181482a9ecb04f98c8498d5c84f53, type: 2}
+  platformMaterial: {fileID: 2100000, guid: 6c8181482a9ecb04f98c8498d5c84f53, type: 2}
   fallTime: 0.5
   isStandardOrientation: 0
 --- !u!1 &2875711874794504998
